@@ -1,0 +1,2498 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌸 はなまるExcel</title>
+<style>
+:root {
+  --pink: #f8c8d4;
+  --mint: #b8e6d0;
+  --beige: #f5e6d3;
+  --lavender: #d4c5e2;
+  --cream: #fef9f0;
+  --soft-white: #faf8f5;
+  --text: #5a4a3a;
+  --text-light: #8a7a6a;
+  --gold: #e8b84b;
+  --rose: #e8878f;
+  --sage: #8fbc8f;
+  --sky: #a8d8ea;
+  --shadow: 0 4px 20px rgba(0,0,0,0.08);
+  --shadow-hover: 0 6px 25px rgba(0,0,0,0.12);
+  --radius: 20px;
+  --radius-sm: 12px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Meiryo', sans-serif;
+  background: linear-gradient(135deg, #fef6f9 0%, #f0f7f4 50%, #f8f4f0 100%);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.screen { display: none; min-height: 100vh; padding-bottom: 100px; }
+.screen.active { display: block; }
+
+/* ====== BOTTOM NAV ====== */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: space-around;
+  padding: 8px 0 12px;
+  border-top: 1px solid #eee;
+  z-index: 100;
+  box-shadow: 0 -2px 15px rgba(0,0,0,0.05);
+}
+
+.nav-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  background: none;
+  border: none;
+  font-size: 10px;
+  color: var(--text-light);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 10px;
+  transition: all 0.3s;
+}
+
+.nav-btn .icon { font-size: 22px; transition: transform 0.3s; }
+.nav-btn.active { color: var(--rose); }
+.nav-btn.active .icon { transform: scale(1.15); }
+
+/* ====== COMMON ====== */
+.section-header {
+  background: linear-gradient(135deg, var(--pink) 0%, var(--lavender) 100%);
+  padding: 30px 20px 25px;
+  text-align: center;
+  border-radius: 0 0 30px 30px;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.section-header::after {
+  content: '';
+  position: absolute;
+  top: -30px;
+  right: -30px;
+  width: 100px;
+  height: 100px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 50%;
+}
+
+.section-header h1 {
+  font-size: 24px;
+  margin-bottom: 5px;
+  color: white;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.section-header p {
+  font-size: 13px;
+  color: rgba(255,255,255,0.9);
+}
+
+.card {
+  background: white;
+  border-radius: var(--radius);
+  padding: 20px;
+  margin: 15px 16px;
+  box-shadow: var(--shadow);
+  transition: transform 0.2s;
+}
+
+.card:hover { transform: translateY(-2px); }
+
+.badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--cream);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 30px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-family: inherit;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--rose) 0%, #d4738a 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(232,135,143,0.4);
+}
+
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(232,135,143,0.5); }
+
+.btn-secondary {
+  background: var(--cream);
+  color: var(--text);
+}
+
+.btn-mint {
+  background: linear-gradient(135deg, var(--mint) 0%, #7bc8a4 100%);
+  color: white;
+}
+
+.btn-gold {
+  background: linear-gradient(135deg, var(--gold) 0%, #d4a030 100%);
+  color: white;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: #eee;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.8s ease;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  padding: 0 16px;
+  margin-bottom: 15px;
+}
+
+.stat-box {
+  background: white;
+  border-radius: var(--radius-sm);
+  padding: 12px 6px;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+
+.stat-box .value { font-size: 20px; font-weight: 700; color: var(--text); }
+.stat-box .label { font-size: 10px; color: var(--text-light); margin-top: 2px; }
+
+/* ====== TOP PAGE ====== */
+#top .hero {
+  background: linear-gradient(135deg, #fce4ec 0%, #f3e5f5 30%, #e8eaf6 60%, #e0f7fa 100%);
+  padding: 40px 20px 30px;
+  text-align: center;
+  border-radius: 0 0 40px 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+#top .hero::before {
+  content: '🌸';
+  position: absolute;
+  font-size: 60px;
+  top: -10px;
+  left: 10px;
+  opacity: 0.3;
+  animation: float 4s ease-in-out infinite;
+}
+
+#top .hero::after {
+  content: '🌷';
+  position: absolute;
+  font-size: 50px;
+  bottom: 10px;
+  right: 15px;
+  opacity: 0.3;
+  animation: float 5s ease-in-out infinite 1s;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes bloom {
+  0% { transform: scale(0.3); opacity: 0; }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes sparkle {
+  0%, 100% { opacity: 0; transform: scale(0.5); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes coinDrop {
+  0% { transform: translateY(-20px) scale(0); opacity: 0; }
+  60% { transform: translateY(5px) scale(1.1); opacity: 1; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.hero-profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-avatar {
+  font-size: 50px;
+  animation: float 3s ease-in-out infinite;
+}
+
+.hero-name {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.hero-level {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255,255,255,0.7);
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  backdrop-filter: blur(5px);
+}
+
+.hero-stats {
+  display: flex;
+  gap: 15px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.hero-stat {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255,255,255,0.7);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  backdrop-filter: blur(5px);
+}
+
+.streak-fire { color: #ff6b35; }
+.coin-gold { color: var(--gold); }
+.flower-pink { color: var(--rose); }
+
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  padding: 0 16px;
+  margin-top: 15px;
+}
+
+.menu-card {
+  background: white;
+  border-radius: var(--radius);
+  padding: 18px 14px;
+  text-align: center;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition: all 0.3s;
+  border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.menu-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-hover);
+}
+
+.menu-card .emoji { font-size: 36px; margin-bottom: 8px; display: block; }
+.menu-card .title { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+.menu-card .desc { font-size: 11px; color: var(--text-light); line-height: 1.4; }
+
+.menu-card:nth-child(1) { border-color: var(--pink); }
+.menu-card:nth-child(2) { border-color: var(--mint); }
+.menu-card:nth-child(3) { border-color: var(--lavender); }
+.menu-card:nth-child(4) { border-color: var(--gold); }
+.menu-card:nth-child(5) { border-color: var(--sky); }
+.menu-card:nth-child(6) { border-color: var(--beige); }
+
+.today-recommend {
+  margin: 20px 16px;
+  background: linear-gradient(135deg, #fff5f7 0%, #f0fff4 100%);
+  border-radius: var(--radius);
+  padding: 18px;
+  border: 1px solid #fde;
+}
+
+.today-recommend h3 {
+  font-size: 15px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.recommend-cards {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 5px;
+}
+
+.recommend-card {
+  flex-shrink: 0;
+  background: white;
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  width: 130px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  cursor: pointer;
+}
+
+.recommend-card .emoji { font-size: 30px; }
+.recommend-card .name { font-size: 12px; font-weight: 600; margin-top: 4px; }
+
+/* ====== QUIZ SCREEN ====== */
+#quiz-area { padding: 16px; }
+
+.quiz-progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.quiz-progress .current { font-size: 14px; font-weight: 600; color: var(--rose); }
+
+.quiz-category {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.quiz-category span {
+  display: inline-block;
+  background: var(--lavender);
+  color: white;
+  padding: 4px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.quiz-question {
+  background: white;
+  border-radius: var(--radius);
+  padding: 25px 20px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+
+.quiz-question h2 {
+  font-size: 18px;
+  line-height: 1.6;
+  font-weight: 600;
+}
+
+.quiz-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--text-light);
+}
+
+.quiz-hint .flower-dots {
+  display: flex;
+  gap: 4px;
+}
+
+.quiz-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.choice-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 16px 18px;
+  background: white;
+  border: 2px solid #eee;
+  border-radius: var(--radius-sm);
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-align: left;
+  font-family: inherit;
+  color: var(--text);
+}
+
+.choice-btn:hover:not(:disabled) {
+  border-color: var(--pink);
+  background: #fff5f7;
+  transform: translateX(4px);
+}
+
+.choice-btn .num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background: var(--cream);
+  border-radius: 50%;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.choice-btn.correct {
+  border-color: #4caf50;
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.choice-btn.correct .num { background: #4caf50; color: white; }
+
+.choice-btn.wrong {
+  border-color: #e53935;
+  background: #ffebee;
+  color: #c62828;
+}
+
+.choice-btn.wrong .num { background: #e53935; color: white; }
+
+.choice-btn:disabled { cursor: default; opacity: 0.8; }
+
+/* ====== RESULT MODAL ====== */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 200;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(4px);
+}
+
+.modal-overlay.show { display: flex; }
+
+.modal {
+  background: white;
+  border-radius: 24px;
+  padding: 30px;
+  max-width: 340px;
+  width: 90%;
+  text-align: center;
+  animation: slideUp 0.4s ease;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+}
+
+.modal .big-emoji { font-size: 60px; margin-bottom: 10px; display: block; }
+.modal h2 { font-size: 20px; margin-bottom: 5px; }
+.modal p { font-size: 14px; color: var(--text-light); margin-bottom: 15px; }
+
+.modal-rewards {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.modal-reward {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-size: 13px;
+  font-weight: 600;
+  animation: coinDrop 0.5s ease backwards;
+}
+
+.modal-reward:nth-child(2) { animation-delay: 0.1s; }
+.modal-reward:nth-child(3) { animation-delay: 0.2s; }
+
+.modal-reward .val { font-size: 18px; color: var(--gold); }
+
+/* ====== EXPLANATION ====== */
+.explanation-box {
+  margin-top: 15px;
+  padding: 15px;
+  background: var(--cream);
+  border-radius: var(--radius-sm);
+  display: none;
+  animation: slideUp 0.3s ease;
+}
+
+.explanation-box.show { display: block; }
+
+.explanation-box h4 {
+  font-size: 13px;
+  color: var(--text-light);
+  margin-bottom: 5px;
+}
+
+.explanation-box p {
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.next-area { margin-top: 15px; display: none; }
+.next-area.show { display: block; }
+
+/* ====== FLOWER SHOP ====== */
+.shop-display {
+  margin: 0 16px;
+  background: linear-gradient(180deg, #e8f5e9 0%, #f1f8e9 30%, #fefbf3 100%);
+  border-radius: var(--radius);
+  padding: 20px;
+  min-height: 200px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.shop-shelf {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  padding: 10px;
+  background: rgba(139,105,65,0.1);
+  border-radius: 10px;
+  min-height: 50px;
+  margin-bottom: 10px;
+}
+
+.shop-shelf .flower-item {
+  font-size: 24px;
+  animation: bloom 0.6s ease backwards;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.shop-shelf .flower-item:hover { transform: scale(1.3); }
+
+.shop-sign {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: white;
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.customer-area {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 10px;
+  background: rgba(255,255,255,0.7);
+  border-radius: 10px;
+}
+
+.customer-area .speech {
+  background: white;
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  position: relative;
+}
+
+.customer-area .speech::before {
+  content: '';
+  position: absolute;
+  left: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 6px solid transparent;
+  border-right-color: white;
+}
+
+.shop-items-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  padding: 0 16px;
+  margin-top: 15px;
+}
+
+.shop-item {
+  background: white;
+  border-radius: var(--radius-sm);
+  padding: 14px 8px;
+  text-align: center;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition: all 0.3s;
+  border: 2px solid transparent;
+}
+
+.shop-item:hover { border-color: var(--pink); transform: translateY(-2px); }
+.shop-item.owned { border-color: var(--mint); opacity: 0.7; cursor: default; }
+.shop-item .item-emoji { font-size: 30px; display: block; margin-bottom: 4px; }
+.shop-item .item-name { font-size: 11px; font-weight: 600; }
+.shop-item .item-price { font-size: 12px; color: var(--gold); font-weight: 700; margin-top: 2px; }
+
+/* ====== 5 MIN MODE ====== */
+.timer-display {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.timer-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--mint) 0%, #7bc8a4 100%);
+  color: white;
+  font-size: 32px;
+  font-weight: 700;
+  box-shadow: 0 4px 20px rgba(127,200,164,0.4);
+  position: relative;
+}
+
+.timer-circle::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 3px solid rgba(127,200,164,0.3);
+}
+
+.timer-label { font-size: 13px; color: var(--text-light); margin-top: 8px; }
+
+.timer-stats {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 15px;
+}
+
+.timer-stat { text-align: center; }
+.timer-stat .val { font-size: 24px; font-weight: 700; color: var(--rose); }
+.timer-stat .lbl { font-size: 11px; color: var(--text-light); }
+
+/* ====== BADGES ====== */
+.badge-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  padding: 0 16px;
+}
+
+.badge-item {
+  background: white;
+  border-radius: var(--radius-sm);
+  padding: 16px 8px;
+  text-align: center;
+  box-shadow: var(--shadow);
+  position: relative;
+  transition: all 0.3s;
+}
+
+.badge-item.locked { opacity: 0.4; filter: grayscale(1); }
+.badge-item .badge-emoji { font-size: 32px; display: block; margin-bottom: 6px; }
+.badge-item .badge-name { font-size: 11px; font-weight: 600; }
+.badge-item .badge-desc { font-size: 10px; color: var(--text-light); margin-top: 2px; }
+
+.badge-item:not(.locked) .badge-emoji {
+  animation: sparkle 2s ease-in-out infinite;
+}
+
+/* ====== STAMPS ====== */
+.stamp-card {
+  margin: 0 16px;
+  background: white;
+  border-radius: var(--radius);
+  padding: 18px;
+  box-shadow: var(--shadow);
+}
+
+.stamp-card h3 {
+  font-size: 14px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stamp-grid {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.stamp {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  border: 2px solid #eee;
+  background: #fafafa;
+}
+
+.stamp.filled {
+  border-color: var(--rose);
+  background: #fff0f2;
+}
+
+/* ====== ROOM DECORATION ====== */
+.room-container {
+  margin: 0 16px;
+  background: linear-gradient(180deg, #f5f0eb 0%, #faf7f4 100%);
+  border-radius: var(--radius);
+  padding: 20px;
+  min-height: 220px;
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+.room-floor {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  align-items: flex-end;
+  min-height: 160px;
+  padding: 10px;
+}
+
+.room-item {
+  font-size: 36px;
+  animation: slideUp 0.4s ease backwards;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.room-item:hover { transform: scale(1.15); }
+
+.room-empty {
+  width: 50px;
+  height: 50px;
+  border: 2px dashed #ddd;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: #ccc;
+}
+
+/* ====== HISTORY ====== */
+.history-list {
+  padding: 0 16px;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  background: white;
+  border-radius: var(--radius-sm);
+  margin-bottom: 8px;
+  box-shadow: var(--shadow);
+}
+
+.history-item .h-icon { font-size: 24px; }
+.history-item .h-info { flex: 1; }
+.history-item .h-title { font-size: 13px; font-weight: 600; }
+.history-item .h-time { font-size: 11px; color: var(--text-light); }
+.history-item .h-xp { font-size: 13px; font-weight: 700; color: var(--gold); }
+
+/* ====== SETTINGS ====== */
+.setting-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  background: white;
+  border-radius: var(--radius-sm);
+  margin: 0 16px 8px;
+  box-shadow: var(--shadow);
+}
+
+.setting-item .s-left { display: flex; align-items: center; gap: 10px; }
+.setting-item .s-icon { font-size: 22px; }
+.setting-item .s-label { font-size: 14px; font-weight: 600; }
+.setting-item .s-desc { font-size: 11px; color: var(--text-light); }
+
+.toggle {
+  width: 48px;
+  height: 26px;
+  background: #ddd;
+  border-radius: 13px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.toggle.on { background: var(--rose); }
+
+.toggle::after {
+  content: '';
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  background: white;
+  border-radius: 50%;
+  top: 2px;
+  left: 2px;
+  transition: transform 0.3s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+}
+
+.toggle.on::after { transform: translateX(22px); }
+
+/* ====== CELEBRATION EFFECTS ====== */
+.confetti {
+  position: fixed;
+  top: -10px;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  z-index: 300;
+  pointer-events: none;
+  animation: confettiFall 2s ease forwards;
+}
+
+@keyframes confettiFall {
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+.toast {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-80px);
+  background: white;
+  padding: 12px 20px;
+  border-radius: 30px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  font-size: 14px;
+  font-weight: 600;
+  z-index: 250;
+  transition: transform 0.4s ease;
+  white-space: nowrap;
+}
+
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* ====== SCROLLBAR ====== */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #ddd; border-radius: 3px; }
+
+/* ====== RESPONSIVE ====== */
+@media (max-width: 380px) {
+  .stat-grid { grid-template-columns: repeat(2, 1fr); }
+  .menu-grid { grid-template-columns: 1fr; }
+  .badge-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ====== CAFE ====== */
+.cafe-counter {
+  margin: 0 16px;
+  background: linear-gradient(135deg, #f5e6d3 0%, #e8d5c4 100%);
+  border-radius: var(--radius);
+  padding: 20px;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+
+.cafe-revenue {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 10px 0;
+}
+
+.cafe-menu-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  padding: 0 16px;
+  margin-top: 15px;
+}
+
+.cafe-menu-item {
+  background: white;
+  border-radius: var(--radius-sm);
+  padding: 14px 8px;
+  text-align: center;
+  box-shadow: var(--shadow);
+  border: 2px solid transparent;
+}
+
+.cafe-menu-item.unlocked { border-color: var(--gold); }
+.cafe-menu-item.locked { opacity: 0.5; filter: grayscale(0.5); }
+.cafe-menu-item .cafe-emoji { font-size: 28px; display: block; }
+.cafe-menu-item .cafe-name { font-size: 11px; font-weight: 600; margin-top: 4px; }
+.cafe-menu-item .cafe-price { font-size: 11px; color: var(--gold); }
+</style>
+</head>
+<body>
+
+<!-- ====== TOP PAGE ====== -->
+<div id="top" class="screen active">
+  <div class="hero">
+    <div class="hero-profile">
+      <div class="hero-avatar" id="heroAvatar">👩‍🌾</div>
+      <div class="hero-name" id="heroName">りなさん</div>
+      <div class="hero-level">⭐ Lv.<span id="heroLevel">1</span></div>
+      <div class="hero-stats">
+        <div class="hero-stat"><span class="flower-pink">🌸</span> <span id="heroFlowers">0</span>本</div>
+        <div class="hero-stat"><span class="coin-gold">🪙</span> <span id="heroCoins">0</span></div>
+        <div class="hero-stat"><span class="streak-fire">🔥</span> <span id="heroStreak">0</span>日</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-box"><div class="value" id="statTotal">0</div><div class="label">累計問題</div></div>
+    <div class="stat-box"><div class="value" id="statCorrect">0</div><div class="label">正解数</div></div>
+    <div class="stat-box"><div class="value" id="statAccuracy">0%</div><div class="label">正解率</div></div>
+    <div class="stat-box"><div class="value" id="statXP">0</div><div class="label">XP</div></div>
+  </div>
+
+  <div class="today-recommend">
+    <h3>🌟 今日のおすすめ</h3>
+    <div class="recommend-cards">
+      <div class="recommend-card" onclick="startMode('flower')">
+        <div class="emoji">🌸</div>
+        <div class="name">花を咲かせる</div>
+      </div>
+      <div class="recommend-card" onclick="startMode('quick5')">
+        <div class="emoji">⏱️</div>
+        <div class="name">5分チャレンジ</div>
+      </div>
+      <div class="recommend-card" onclick="startMode('room')">
+        <div class="emoji">🏡</div>
+        <div class="name">お部屋づくり</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="menu-grid">
+    <div class="menu-card" onclick="startMode('flower')">
+      <span class="emoji">🌸</span>
+      <div class="title">はなまるExcel</div>
+      <div class="desc">花を育てながら<br>Excelを覚える</div>
+    </div>
+    <div class="menu-card" onclick="startMode('room')">
+      <span class="emoji">🏡</span>
+      <div class="title">おうちでMOS</div>
+      <div class="desc">お部屋を完成<br>させましょう</div>
+    </div>
+    <div class="menu-card" onclick="startMode('tree')">
+      <span class="emoji">🌳</span>
+      <div class="title">花咲くOffice</div>
+      <div class="desc">一本の木を<br>育てましょう</div>
+    </div>
+    <div class="menu-card" onclick="startMode('shop')">
+      <span class="emoji">🌹</span>
+      <div class="title">お花屋さん</div>
+      <div class="desc">お店を大きく<br>しましょう</div>
+    </div>
+    <div class="menu-card" onclick="startMode('quick5')">
+      <span class="emoji">⏱️</span>
+      <div class="title">5分だけExcel</div>
+      <div class="desc">忙しい日に<br>さっと学習</div>
+    </div>
+    <div class="menu-card" onclick="startMode('cafe')">
+      <span class="emoji">☕</span>
+      <div class="title">おうちカフェ</div>
+      <div class="desc">カフェ経営を<br>しながら学習</div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== QUIZ SCREEN ====== -->
+<div id="quiz" class="screen">
+  <div class="section-header" id="quizHeader">
+    <h1 id="quizTitle">🌸 はなまるExcel</h1>
+    <p id="quizSubtitle">花を育てながら学びましょう</p>
+  </div>
+
+  <div id="quiz-area">
+    <div class="quiz-progress">
+      <span class="current" id="qProgress">1 / 5</span>
+      <div class="progress-bar" style="flex:1">
+        <div class="progress-fill" id="qProgressBar" style="width:0%;background:linear-gradient(90deg,var(--pink),var(--rose))"></div>
+      </div>
+    </div>
+
+    <div class="quiz-category"><span id="qCategory">Excel</span></div>
+
+    <div class="quiz-question">
+      <h2 id="qText">問題テキスト</h2>
+      <div class="quiz-hint" id="qHint">
+        <span>あと</span>
+        <div class="flower-dots" id="flowerDots"></div>
+        <span>で花が咲きます</span>
+      </div>
+    </div>
+
+    <div class="quiz-choices" id="qChoices"></div>
+
+    <div class="explanation-box" id="qExplanation">
+      <h4>💡 解説</h4>
+      <p id="qExplainText"></p>
+    </div>
+
+    <div class="next-area" id="nextArea">
+      <button class="btn btn-primary" style="width:100%" onclick="nextQuestion()">次の問題 ▶</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====== FLOWER SHOP ====== -->
+<div id="flower-screen" class="screen">
+  <div class="section-header" style="background:linear-gradient(135deg,#fce4ec,#f8bbd0)">
+    <h1>🌸 お花屋さん</h1>
+    <p>問題を解いて花を咲かせましょう</p>
+  </div>
+
+  <div class="shop-display" id="flowerShop">
+    <div class="shop-sign">🌸 はなまる花屋</div>
+    <div class="shop-shelf" id="flowerShelf"></div>
+    <div class="customer-area" id="customerArea" style="display:none">
+      <span>👩</span>
+      <div class="speech" id="customerSpeech">きれいなお花ですね！</div>
+      <span>★★★★★</span>
+    </div>
+  </div>
+
+  <div class="stat-grid" style="margin-top:15px">
+    <div class="stat-box"><div class="value" id="flowerCount">0</div><div class="label">お花</div></div>
+    <div class="stat-box"><div class="value" id="flowerCoins">0</div><div class="label">🪙 コイン</div></div>
+    <div class="stat-box"><div class="value" id="flowerLevel">1</div><div class="label">Lv</div></div>
+    <div class="stat-box"><div class="value" id="flowerRank">🌱</div><div class="label">称号</div></div>
+  </div>
+
+  <div style="padding:0 16px;margin-top:15px">
+    <button class="btn btn-primary" style="width:100%" onclick="startMode('flower')">
+      🌷 今日の5問を始める
+    </button>
+  </div>
+
+  <h3 style="padding:20px 16px 10px">🏪 ショップ</h3>
+  <div class="shop-items-grid" id="flowerShopItems"></div>
+</div>
+
+<!-- ====== QUICK 5 MIN ====== -->
+<div id="quick5-screen" class="screen">
+  <div class="section-header" style="background:linear-gradient(135deg,var(--mint),#7bc8a4)">
+    <h1>⏱️ 5分だけExcel</h1>
+    <p>忙しい日のための集中学習</p>
+  </div>
+
+  <div class="timer-display">
+    <div class="timer-circle" id="timerDisplay">5:00</div>
+    <div class="timer-label">残り時間</div>
+  </div>
+
+  <div class="timer-stats">
+    <div class="timer-stat"><div class="val" id="quickCorrect">0</div><div class="lbl">正解</div></div>
+    <div class="timer-stat"><div class="val" id="quickTotal">0</div><div class="lbl">問題数</div></div>
+    <div class="timer-stat"><div class="val" id="quickXP">0</div><div class="lbl">獲得XP</div></div>
+  </div>
+
+  <div id="quickQuizArea" style="padding:0 16px;margin-top:20px;display:none">
+    <div class="quiz-question">
+      <h2 id="quickQText">問題</h2>
+    </div>
+    <div class="quiz-choices" id="quickQChoices"></div>
+    <div class="explanation-box" id="quickExplanation">
+      <h4>💡 解説</h4>
+      <p id="quickExplainText"></p>
+    </div>
+  </div>
+
+  <div style="padding:16px;text-align:center" id="quickStartArea">
+    <button class="btn btn-mint" style="font-size:18px;padding:16px 40px" onclick="startQuick5()">
+      ▶ スタート
+    </button>
+    <p style="font-size:12px;color:var(--text-light);margin-top:10px">※ タイマー開始と同時に問題が表示されます</p>
+  </div>
+</div>
+
+<!-- ====== BADGES ====== -->
+<div id="badge-screen" class="screen">
+  <div class="section-header" style="background:linear-gradient(135deg,var(--gold),#d4a030)">
+    <h1>✨ バッジ</h1>
+    <p>earned badges are kept here</p>
+  </div>
+
+  <div class="stamp-card" style="margin-top:15px">
+    <h3>📅 今月のスタンプ</h3>
+    <div class="stamp-grid" id="stampGrid"></div>
+  </div>
+
+  <h3 style="padding:20px 16px 10px">🏆 コレクション</h3>
+  <div class="badge-grid" id="badgeGrid"></div>
+</div>
+
+<!-- ====== SETTINGS ====== -->
+<div id="settings-screen" class="screen">
+  <div class="section-header" style="background:linear-gradient(135deg,#e0e0e0,#bdbdbd)">
+    <h1>⚙️ 設定</h1>
+    <p>カスタマイズしましょう</p>
+  </div>
+
+  <div class="setting-item" style="margin-top:20px">
+    <div class="s-left">
+      <span class="s-icon">👩</span>
+      <div><div class="s-label">お名前</div><div class="s-desc" id="settingName">りなさん</div></div>
+    </div>
+    <button class="btn btn-secondary" onclick="changeName()">変更</button>
+  </div>
+
+  <div class="setting-item">
+    <div class="s-left">
+      <span class="s-icon">🔔</span>
+      <div><div class="s-label">リマインダー</div><div class="s-desc">毎日の学習リマインド</div></div>
+    </div>
+    <div class="toggle on" id="toggleReminder" onclick="this.classList.toggle('on')"></div>
+  </div>
+
+  <div class="setting-item">
+    <div class="s-left">
+      <span class="s-icon">🔊</span>
+      <div><div class="s-label">サウンド</div><div class="s-desc">正解時の効果音</div></div>
+    </div>
+    <div class="toggle on" id="toggleSound" onclick="this.classList.toggle('on')"></div>
+  </div>
+
+  <div class="setting-item">
+    <div class="s-left">
+      <span class="s-icon">📊</span>
+      <div><div class="s-label">難易度</div><div class="s-desc">出題する問題のレベル</div></div>
+    </div>
+    <select id="difficultySelect" style="padding:6px 12px;border-radius:8px;border:1px solid #ddd;font-family:inherit">
+      <option value="easy">🌱 初心者</option>
+      <option value="normal" selected>🌼 中級</option>
+      <option value="hard">🌹 上級</option>
+    </select>
+  </div>
+
+  <h3 style="padding:20px 16px 10px">📜 学習履歴</h3>
+  <div class="history-list" id="historyList"></div>
+
+  <div style="padding:20px 16px;text-align:center">
+    <button class="btn btn-secondary" style="color:#e53935" onclick="resetData()">🗑️ データをリセット</button>
+  </div>
+</div>
+
+<!-- ====== MODAL ====== -->
+<div class="modal-overlay" id="resultModal">
+  <div class="modal">
+    <span class="big-emoji" id="modalEmoji">🎉</span>
+    <h2 id="modalTitle">お疲れ様！</h2>
+    <p id="modalDesc">今日の学習が完了しました</p>
+    <div class="modal-rewards">
+      <div class="modal-reward"><span class="val" id="modalXP">+0</span><span>XP</span></div>
+      <div class="modal-reward"><span class="val" id="modalCoin">+0</span><span>🪙</span></div>
+      <div class="modal-reward"><span class="val" id="modalFlower">+0</span><span>🌸</span></div>
+    </div>
+    <div id="modalUnlock" style="display:none;margin-bottom:15px">
+      <p style="font-size:13px;color:var(--rose);font-weight:600" id="modalUnlockText"></p>
+    </div>
+    <button class="btn btn-primary" style="width:100%" onclick="closeModal()">もとに戻る</button>
+  </div>
+</div>
+
+<!-- ====== TOAST ====== -->
+<div class="toast" id="toast"></div>
+
+<!-- ====== BOTTOM NAV ====== -->
+<nav class="bottom-nav" id="bottomNav">
+  <button class="nav-btn active" onclick="showScreen('top')">
+    <span class="icon">🏠</span>
+    <span>ホーム</span>
+  </button>
+  <button class="nav-btn" onclick="startMode('flower')">
+    <span class="icon">🌸</span>
+    <span>お花屋</span>
+  </button>
+  <button class="nav-btn" onclick="startMode('quick5')">
+    <span class="icon">⏱️</span>
+    <span>5分チャレ</span>
+  </button>
+  <button class="nav-btn" onclick="showScreen('badge-screen')">
+    <span class="icon">🏆</span>
+    <span>バッジ</span>
+  </button>
+  <button class="nav-btn" onclick="showScreen('settings-screen')">
+    <span class="icon">⚙️</span>
+    <span>設定</span>
+  </button>
+</nav>
+
+<!-- ====== QUESTION DATA ====== -->
+<script id="allQuestions" type="application/json">
+[
+  {
+    "category": "Excel",
+    "level": 1,
+    "question": "セルを絶対参照にする記号は？",
+    "choices": ["#", "$", "@", "%"],
+    "answer": 1,
+    "explanation": "絶対参照は $A$1 のように $ を付けます。コピーしても参照先が変わりません。",
+    "flower": "🌱"
+  },
+  {
+    "category": "Excel",
+    "level": 1,
+    "question": "合計を求める関数は？",
+    "choices": ["AVG", "SUM", "MAX", "COUNT"],
+    "answer": 1,
+    "explanation": "SUM関数は範囲の合計を計算します。例：=SUM(A1:A10)",
+    "flower": "🌱"
+  },
+  {
+    "category": "Excel",
+    "level": 1,
+    "question": "平均を求める関数は？",
+    "choices": ["SUM", "AVERAGE", "MIN", "MEDIAN"],
+    "answer": 1,
+    "explanation": "AVERAGE関数は範囲の平均値を返します。",
+    "flower": "🌱"
+  },
+  {
+    "category": "Excel",
+    "level": 1,
+    "question": "最大値を求める関数は？",
+    "choices": ["MAX", "MIN", "LARGE", "TOP"],
+    "answer": 0,
+    "explanation": "MAX関数は範囲内の最大値を返します。",
+    "flower": "🌱"
+  },
+  {
+    "category": "Excel",
+    "level": 1,
+    "question": "列と行を入れ替える操作は？",
+    "choices": ["ソート", "フィルター", "行列の入れ替え", "分割"],
+    "answer": 2,
+    "explanation": "行列の入れ替え（Paste Special > Transpose）で行と列を入れ替えられます。",
+    "flower": "🌱"
+  },
+  {
+    "category": "Excel",
+    "level": 2,
+    "question": "条件に合ったデータだけ集計する関数は？",
+    "choices": ["SUMIF", "COUNT", "SUM", "INDEX"],
+    "answer": 0,
+    "explanation": "SUMIFは条件を満たすセルの合計を求めます。例：=SUMIF(A1:A10,\"東京\",B1:B10)",
+    "flower": "🌷"
+  },
+  {
+    "category": "Excel",
+    "level": 2,
+    "question": "条件に合った回数を数える関数は？",
+    "choices": ["COUNT", "COUNTIF", "COUNTA", "COUNTBLANK"],
+    "answer": 1,
+    "explanation": "COUNTIFは指定した条件に合ったセルの数を数えます。",
+    "flower": "🌷"
+  },
+  {
+    "category": "Excel",
+    "level": 2,
+    "question": "IF関数で「A1が100以上なら合格」を表す式は？",
+    "choices": ["=IF(A1>=100,\"合格\",\"不合格\")", "=IF(A1>100,\"合格\")", "=IF(100<=A1,\"合格\")", "=IF(A1=100,\"合格\")"],
+    "answer": 0,
+    "explanation": "IF関数は =IF(条件, 真の値, 假の値) の形式です。",
+    "flower": "🌷"
+  },
+  {
+    "category": "Excel",
+    "level": 2,
+    "question": "セルの書式設定で通貨表示にするショートカットは？",
+    "choices": ["Ctrl+Shift+$", "Ctrl+$", "Ctrl+Shift+C", "Ctrl+F"],
+    "answer": 0,
+    "explanation": "Ctrl+Shift+$ で通貨形式にできます。",
+    "flower": "🌷"
+  },
+  {
+    "category": "Excel",
+    "level": 2,
+    "question": "テーブルとして整形するショートカットは？",
+    "choices": ["Ctrl+T", "Ctrl+D", "Ctrl+L", "Ctrl+M"],
+    "answer": 0,
+    "explanation": "Ctrl+T で選択範囲をテーブルに変換します。",
+    "flower": "🌷"
+  },
+  {
+    "category": "Excel",
+    "level": 3,
+    "question": "VLOOKUP関数の正しい構文は？",
+    "choices": ["=VLOOKUP(検索値,範囲,列番号,検索方法)", "=VLOOKUP(範囲,検索値,列番号,検索方法)", "=VLOOKUP(列番号,検索値,範囲,検索方法)", "=VLOOKUP(検索値,列番号,範囲,検索方法)"],
+    "answer": 0,
+    "explanation": "=VLOOKUP(検索値, テーブル範囲, 列番号, FALSE) が基本形です。",
+    "flower": "🌹"
+  },
+  {
+    "category": "Excel",
+    "level": 3,
+    "question": "INDEX関数と組み合わせて使う関数は？",
+    "choices": ["MATCH", "SEARCH", "FIND", "LOOKUP"],
+    "answer": 0,
+    "explanation": "INDEX(範囲, MATCH(検索値, 範囲, 0)) はVLOOKUPより柔軟な参照が可能です。",
+    "flower": "🌹"
+  },
+  {
+    "category": "Excel",
+    "level": 3,
+    "question": "ピボットテーブルを作成するショートカットは？",
+    "choices": ["Alt+N+V", "Ctrl+P", "Alt+D+P", "Ctrl+Shift+P"],
+    "answer": 0,
+    "explanation": "Alt+N+V でピボットテーブルの挿入画面が開きます。旧バージョンは Alt+D+P。",
+    "flower": "🌹"
+  },
+  {
+    "category": "Excel",
+    "level": 3,
+    "question": "グラフの種類で、データの推移を見るのに適しているのは？",
+    "choices": ["折れ線グラフ", "棒グラフ", "円グラフ", "散布図"],
+    "answer": 0,
+    "explanation": "折れ線グラフは時系列データの変化や傾向の把握に最適です。",
+    "flower": "🌹"
+  },
+  {
+    "category": "Excel",
+    "level": 3,
+    "question": "XLOOKUP関数の特徴は？",
+    "choices": ["左方向にも検索できる", "数値しか検索できない", "1列しか使えない", "数式が必須"],
+    "answer": 0,
+    "explanation": "XLOOKUPはVLOOKUPと違い、左方向への検索やデフォルト値の指定が可能です。",
+    "flower": "🌹"
+  },
+  {
+    "category": "Excel",
+    "level": 4,
+    "question": "LAMBDA関数の役割は？",
+    "choices": ["独自の関数を定義する", "データをソートする", "条件付き書式を設定する", "チャートを作成する"],
+    "answer": 0,
+    "explanation": "LAMBDAで名前付きのカスタム関数を作成し、再利用できます。",
+    "flower": "💐"
+  },
+  {
+    "category": "Excel",
+    "level": 4,
+    "question": "FILTER関数で使われる第3引数は？",
+    "choices": ["エラー時の値", "ソート方法", "検索範囲", "行番号"],
+    "answer": 0,
+    "explanation": "FILTER(配列, 条件, エラー時の値) の第3引数は、フィルター結果が空の場合の代替値です。",
+    "flower": "💐"
+  },
+  {
+    "category": "Excel",
+    "level": 4,
+    "question": "UNIQUE関数の結果は？",
+    "choices": ["重複を除いた一意の値", "ソートされた値", "最大値と最小値", "平均値"],
+    "answer": 0,
+    "explanation": "UNIQUE関数は範囲から重複を除いた一意の値を返します。",
+    "flower": "💐"
+  },
+  {
+    "category": "ITパスポート",
+    "level": 1,
+    "question": "CPUの役割は？",
+    "choices": ["記憶", "演算・制御", "表示", "印刷"],
+    "answer": 1,
+    "explanation": "CPUはコンピュータの頭脳で、演算と制御を担当します。",
+    "flower": "🌱"
+  },
+  {
+    "category": "ITパスポート",
+    "level": 1,
+    "question": "RAMは何を保存する？",
+    "choices": ["一時データ", "永久データ", "OSのみ", "画像のみ"],
+    "answer": 0,
+    "explanation": "RAMはメインメモリで、電源を切ると内容が消える一時記憶装置です。",
+    "flower": "🌱"
+  },
+  {
+    "category": "ITパスポート",
+    "level": 1,
+    "question": "HDD・SSDは何の略？",
+    "choices": ["ハードディスクドライブ・ソリッドステートドライブ", "ハイテクデータ・システム", "ハードデータ・セーフ", "ホストディスク・セーフストア"],
+    "answer": 0,
+    "explanation": "HDDは磁気ディスク、SSDは半導体メモリを使った記憶装置です。",
+    "flower": "🌱"
+  },
+  {
+    "category": "ITパスポート",
+    "level": 1,
+    "question": "OSの例として正しいのは？",
+    "choices": ["Windows, macOS", "Excel, Word", "Chrome, Firefox", "Photoshop, Illustrator"],
+    "answer": 0,
+    "explanation": "OS（オペレーティングシステム）はWindows, macOS, Linuxなどです。",
+    "flower": "🌱"
+  },
+  {
+    "category": "ITパスポート",
+    "level": 1,
+    "question": "インターネットで使われる通信プロトコルは？",
+    "choices": ["HTTP, TCP/IP", "HTML, CSS", "Java, Python", "USB, HDMI"],
+    "answer": 0,
+    "explanation": "TCP/IPがインターネットの基盤プロトコルで、HTTPはWeb通信で使われます。",
+    "flower": "🌱"
+  },
+  {
+    "category": "ITパスポート",
+    "level": 2,
+    "question": "クラウドサービスの特徴は？",
+    "choices": ["ネット経由でサーバー資源を利用する", "専用サーバーを購入する", "オフラインで動作する", "USBで接続する"],
+    "answer": 0,
+    "explanation": "クラウドサービスはインターネット経由でサーバー、ストレージ、アプリケーションを利用できます。",
+    "flower": "🌷"
+  },
+  {
+    "category": "ITパスポート",
+    "level": 2,
+    "question": "IoTとは何の略？",
+    "choices": ["Internet of Things", "Input of Technology", "Info of Transfer", "Integrated Operating Tool"],
+    "answer": 0,
+    "explanation": "IoTは「物のインターネット」と呼ばれ、家電や車など様々なデバイスがネットに接続される仕組みです。",
+    "flower": "🌷"
+  },
+  {
+    "category": "ITパスポート",
+    "level": 2,
+    "question": "サイバーセキュリティの基本三要素は？",
+    "choices": ["機密性・完全性・可用性", "速度・容量・精度", "保存・検索・表示", "入力・処理・出力"],
+    "answer": 0,
+    "explanation": "CIA三要素（Confidentiality, Integrity, Availability）が情報セキュリティの基本です。",
+    "flower": "🌷"
+  },
+  {
+    "category": "ITパスポート",
+    "level": 2,
+    "question": "ERPシステムの役割は？",
+    "choices": ["企業の経営資源を統合管理", "メールの送受信", "Webサイトの作成", "画像の編集"],
+    "answer": 0,
+    "explanation": "ERP（Enterprise Resource Planning）は人事、会計、販売などの業務を統合的に管理するシステムです。",
+    "flower": "🌷"
+  },
+  {
+    "category": "ITパスポート",
+    "level": 2,
+    "question": "ビジネスにおける「DX」とは？",
+    "choices": ["デジタルトランスフォーメーション", "データエクスチェンジ", "ディスクサルファイド", "ダイレクトエクスポート"],
+    "answer": 0,
+    "explanation": "DXはデジタル技術を活用して業務やビジネスモデルを変革することです。",
+    "flower": "🌷"
+  },
+  {
+    "category": "ITパスポート",
+    "level": 3,
+    "question": "プロジェクト管理手法「アジャイル」の特徴は？",
+    "choices": ["短期サイクルで開発を繰り返す", "全工程を完了してから納品する", "設計書を最重視する", "外注を前提とする"],
+    "answer": 0,
+    "explanation": "アジャイルは2〜4週間のスプリントで小刻みに開発し、都度改善する手法です。",
+    "flower": "🌹"
+  },
+  {
+    "category": "ITパスポート",
+    "level": 3,
+    "question": "ブロックチェーンの特徴は？",
+    "choices": ["分散型で改ざんが難しい", "中央サーバーで管理される", "暗号化が不可能", "テキストのみ対応"],
+    "answer": 0,
+    "explanation": "ブロックチェーンは取記録を分散的に保存し、改ざんが困難な技術です。",
+    "flower": "🌹"
+  },
+  {
+    "category": "ITパスポート",
+    "level": 3,
+    "question": "AIの「教師あり学習」とは？",
+    "choices": ["正解付きデータで学習する", "正解なしでパターンを発見する", "人間が直接教える", "自ら試行錯誤する"],
+    "answer": 0,
+    "explanation": "教師あり学習は、入力と正解のペアをデータとして与え、パターンを学習させる手法です。",
+    "flower": "🌹"
+  },
+  {
+    "category": "ITパスポート",
+    "level": 3,
+    "question": "セキュリティ対策として「多要素認証」とは？",
+    "choices": ["複数の認証方法を組み合わせる", "パスワードを複数個使う", "複数のデバイスを使う", "複数回ログインする"],
+    "answer": 0,
+    "explanation": "多要素認証は、パスワード＋指紋やOTPなど異なる種類の認証を組み合わせる方法です。",
+    "flower": "🌹"
+  },
+  {
+    "category": "ITパスポート",
+    "level": 4,
+    "question": "マイクロサービスアーキテクチャの特徴は？",
+    "choices": ["機能ごとに小さなサービスに分ける", "すべてを1つの大きなサービスにする", "フロントエンドのみ開発する", "データベースのみ使用する"],
+    "answer": 0,
+    "explanation": "マイクロサービスはアプリを小さな独立したサービスに分割し、それぞれを個別に開発・運用する手法です。",
+    "flower": "💐"
+  },
+  {
+    "category": "ITパスポート",
+    "level": 4,
+    "question": "RPAの役割は？",
+    "choices": ["定型作業を自動化する", "データベースを構築する", "ネットワークを設計する", "セキュリティを強化する"],
+    "answer": 0,
+    "explanation": "RPA（Robotic Process Automation）は人間が行う定型的な業務をソフトウェアロボットで自動化する技術です。",
+    "flower": "💐"
+  },
+  {
+    "category": "Word",
+    "level": 1,
+    "question": "見出しスタイルの主な用途は？",
+    "choices": ["文書構造の整理", "文字装飾のみ", "画像挿入", "印刷設定"],
+    "answer": 0,
+    "explanation": "見出しスタイルは文書の構造を明確にし、目次作成やナビゲーションに利用します。",
+    "flower": "🌱"
+  },
+  {
+    "category": "Word",
+    "level": 2,
+    "question": "目次を自動作成するには？",
+    "choices": ["参考資料タブの目次", "挿入タブの目次", "ページレイアウト", "デザインタブ"],
+    "answer": 0,
+    "explanation": "参考資料タブから「目次」を挿入すると、見出しに基づいて自動で目次が作成されます。",
+    "flower": "🌷"
+  },
+  {
+    "category": "Word",
+    "level": 2,
+    "question": "ページ番号を挿入するには？",
+    "choices": ["挿入タブ → フッタ", "ホームタブ", "レイアウトタブ", "ファイルタブ"],
+    "answer": 0,
+    "explanation": "挿入タブのフッタまたはヘッダからページ番号を設定できます。",
+    "flower": "🌷"
+  },
+  {
+    "category": "PowerPoint",
+    "level": 1,
+    "question": "スライドショーを開始するショートカットは？",
+    "choices": ["F5", "F1", "Ctrl+P", "Alt+S"],
+    "answer": 0,
+    "explanation": "F5で最初から、Shift+F5で現在のスライドからスライドショーを開始します。",
+    "flower": "🌱"
+  },
+  {
+    "category": "PowerPoint",
+    "level": 2,
+    "question": "スライドの切り取り時間を指定できる機能は？",
+    "choices": ["スライドショータイミング", "アニメーションタイミング", "トランジション", "自動再生"],
+    "answer": 0,
+    "explanation": "スライドショータイミングで各スライドの表示時間を秒単位で指定できます。",
+    "flower": "🌷"
+  },
+  {
+    "category": "PowerPoint",
+    "level": 2,
+    "question": "スライド master の主な用途は？",
+    "choices": ["デザインの一括変更", "スライドショーの再生", "音声の挿入", "印刷設定"],
+    "answer": 0,
+    "explanation": "スライドマスターでフォントや配置を一括設定し、統一感のあるデザインを実現します。",
+    "flower": "🌷"
+  },
+  {
+    "category": "Excel",
+    "level": 2,
+    "question": "データの並び替えで「降順」は？",
+    "choices": ["大きい順", "小さい順", "ランダム", "五十音順のみ"],
+    "answer": 0,
+    "explanation": "降順はZ→A、9→1のように大きい順に並べることです。",
+    "flower": "🌷"
+  },
+  {
+    "category": "Excel",
+    "level": 1,
+    "question": "コピーのショートカットは？",
+    "choices": ["Ctrl+C", "Ctrl+V", "Ctrl+X", "Ctrl+Z"],
+    "answer": 0,
+    "explanation": "Ctrl+C でコピー、Ctrl+V で貼り付け、Ctrl+X で切り取り、Ctrl+Z で元に戻します。",
+    "flower": "🌱"
+  },
+  {
+    "category": "Excel",
+    "level": 1,
+    "question": "「元に戻す」のショートカットは？",
+    "choices": ["Ctrl+Z", "Ctrl+Y", "Ctrl+U", "Ctrl+A"],
+    "answer": 0,
+    "explanation": "Ctrl+Z で直前の操作を元に戻せます。Ctrl+Y でやり直します。",
+    "flower": "🌱"
+  },
+  {
+    "category": "Excel",
+    "level": 3,
+    "question": "CHOOSE関数で3番目の値を返す式は？",
+    "choices": ["=CHOOSE(3,\"A\",\"B\",\"C\",\"D\")", "=CHOOSE(A3,\"A\",\"B\",\"C\")", "=CHOOSE(3,A,B,C)", "=CHOOSE(C3,\"A\",\"B\")"],
+    "answer": 0,
+    "explanation": "CHOOSE(番号, 値1, 値2, ...)で、番号に対応した値を返します。3なら「C」。",
+    "flower": "🌹"
+  },
+  {
+    "category": "ITパスポート",
+    "level": 2,
+    "question": "VPNの主な目的は？",
+    "choices": ["安全な通信路を構築する", "速度を上げる", "容量を増やす", "画面をキャプチャする"],
+    "answer": 0,
+    "explanation": "VPNはインターネット上に仮想的な専用回線を構築し、通信を暗号化して安全に通信します。",
+    "flower": "🌷"
+  },
+  {
+    "category": "Excel",
+    "level": 4,
+    "question": "スプレッドシートで条件付き書式を設定する目的は？",
+    "choices": ["条件に応じてセルの見た目を変える", "データを削除する", "ファイルを圧縮する", "印刷範囲を設定する"],
+    "answer": 0,
+    "explanation": "条件付き書式は、値に応じて文字色や背景色を自動で変える機能です。",
+    "flower": "💐"
+  },
+  {
+    "category": "ITパスポート",
+    "level": 1,
+    "question": "キーボードで「全選択」するショートカットは？",
+    "choices": ["Ctrl+A", "Ctrl+S", "Ctrl+F", "Ctrl+R"],
+    "answer": 0,
+    "explanation": "Ctrl+A で現在の画面のすべてを選択します。AはAllの略です。",
+    "flower": "🌱"
+  },
+  {
+    "category": "Excel",
+    "level": 2,
+    "question": "相対参照と絶対参照の違いは？",
+    "choices": ["コピー時に参照先が変わるか変わらないか", "数値の精度の違い", "セルの色の違い", "関数の種類の違い"],
+    "answer": 0,
+    "explanation": "相対参照はコピー時にセルが変わり、絶対参照（$）は常に同じセルを指します。",
+    "flower": "🌷"
+  },
+  {
+    "category": "Excel",
+    "level": 3,
+    "question": "OFFSET関数の役割は？",
+    "choices": ["指定セルからずれた範囲を参照する", "データをソートする", "グラフを作成する", "ファイルを保存する"],
+    "answer": 0,
+    "explanation": "OFFSET(参照, 行, 列, [高さ], [幅]) で基準セルからずれた範囲を動的に参照できます。",
+    "flower": "🌹"
+  },
+  {
+    "category": "Word",
+    "level": 3,
+    "question": "差し込み印刷で使うデータソースの形式は？",
+    "choices": ["ExcelシートやCSV", "PDFのみ", "画像ファイルのみ", "HTMLのみ"],
+    "answer": 0,
+    "explanation": "差し込み印刷ではExcelファイルやCSVをデータソースとして使用できます。",
+    "flower": "🌹"
+  },
+  {
+    "category": "PowerPoint",
+    "level": 3,
+    "question": "プレゼン資料をPDFに変換するには？",
+    "choices": ["ファイル → 名前を付けて保存 → PDF", "スライドショー → PDF", "デザイン → PDF", "挿入 → PDF"],
+    "answer": 0,
+    "explanation": "ファイル > 名前を付けて保存 またはエクスポートからPDF形式を選択します。",
+    "flower": "🌹"
+  }
+]
+</script>
+
+<script>
+// ====== GAME STATE ======
+const DEFAULT_STATE = {
+  name: "りな",
+  level: 1,
+  xp: 0,
+  coin: 0,
+  streak: 0,
+  lastPlayDate: null,
+  totalAnswered: 0,
+  totalCorrect: 0,
+  flowers: [],
+  ownedItems: [],
+  badges: [],
+  cafeMenu: ["ラテ"],
+  cafeRevenue: 0,
+  roomItems: [],
+  history: [],
+  stamps: {},
+  todayAnswered: 0,
+  todayCorrect: 0,
+  todayDate: null,
+  questionHistory: []
+};
+
+let state = loadState();
+let currentQuiz = [];
+let quizIndex = 0;
+let quizCorrect = 0;
+let quizXP = 0;
+let quizCoin = 0;
+let quizFlowerCount = 0;
+let currentMode = '';
+let quick5Timer = null;
+let quick5Time = 300;
+let quick5Active = false;
+let quick5CorrectCount = 0;
+let quick5TotalCount = 0;
+let quick5XP = 0;
+
+// Flower types with rarity
+const FLOWERS = {
+  '🌱': { name: '種', rarity: 1 },
+  '🌼': { name: '芽', rarity: 2 },
+  '🌷': { name: 'チューリップ', rarity: 3 },
+  '🌹': { name: 'バラ', rarity: 4 },
+  '🌻': { name: 'ひまわり', rarity: 4 },
+  '🌺': { name: 'ハイビスカス', rarity: 5 },
+  '💐': { name: '花束', rarity: 5 },
+  '🌸': { name: '桜', rarity: 6 },
+  '🪷': { name: '蓮', rarity: 6 },
+  '🏵️': { name: 'カーネーション', rarity: 3 }
+};
+
+const SHOP_ITEMS = [
+  { id: 'flower_tulip', emoji: '🌷', name: 'チューリップ', price: 100, type: 'flower' },
+  { id: 'flower_rose', emoji: '🌹', name: 'バラ', price: 300, type: 'flower' },
+  { id: 'flower_gerbera', emoji: '🌼', name: 'ガーベラ', price: 250, type: 'flower' },
+  { id: 'flower_plant', emoji: '🪴', name: '観葉植物', price: 500, type: 'flower' },
+  { id: 'furniture_bench', emoji: '🪑', name: '木のベンチ', price: 800, type: 'room' },
+  { id: 'furniture_umbrella', emoji: '☂️', name: 'パラソル', price: 1200, type: 'room' },
+  { id: 'furniture_chair', emoji: '💺', name: 'おしゃれな椅子', price: 600, type: 'room' },
+  { id: 'furniture_lamp', emoji: '🪔', name: 'ランタン', price: 400, type: 'room' },
+  { id: 'furniture_clock', emoji: '🕰️', name: '壁掛け時計', price: 350, type: 'room' }
+];
+
+const ROOM_FURNITURE = [
+  '🛋️', '🪑', '🪞', '🖼️', '🏺', '🕰️', '🪔', '📚', '🎵',
+  '🧸', '🪴', '🕯️', '🎭', '🪃', '🎪'
+];
+
+const CAFE_ITEMS = [
+  { id: 'latte', emoji: '☕', name: 'ラテ', price: 0, unlocked: true },
+  { id: 'cake', emoji: '🍰', name: 'ケーキ', price: 150 },
+  { id: 'croissant', emoji: '🥐', name: 'クロワッサン', price: 200 },
+  { id: 'cookie', emoji: '🍪', name: 'クッキー', price: 100 },
+  { id: 'parfait', emoji: '🍨', name: 'パフェ', price: 300 },
+  { id: 'smoothie', emoji: '🥤', name: 'スムージー', price: 250 },
+  { id: 'pudding', emoji: '🍮', name: 'プリン', price: 180 },
+  { id: 'pancake', emoji: '🥞', name: 'パンケーキ', price: 220 },
+  { id: 'sando', emoji: '🥪', name: 'サンドイッチ', price: 280 }
+];
+
+const BADGES = [
+  { id: 'first_flower', emoji: '🌱', name: 'はじめの一歩', desc: '最初の花を咲かせた', condition: s => s.flowers.length >= 1 },
+  { id: 'ten_questions', emoji: '📚', name: '10問チャレンジ', desc: '10問解いた', condition: s => s.totalAnswered >= 10 },
+  { id: 'fifty_questions', emoji: '🎯', name: '50問マスター', desc: '50問解いた', condition: s => s.totalAnswered >= 50 },
+  { id: 'hundred_questions', emoji: '👑', name: '100問達成', desc: '100問解いた', condition: s => s.totalAnswered >= 100 },
+  { id: 'excel_beginner', emoji: '🌼', name: 'Excelはじめました', desc: 'Excelを初めて解いた', condition: s => s.history.some(h => h.category === 'Excel') },
+  { id: 'sum_master', emoji: '🌸', name: 'SUMマスター', desc: 'SUM関数の問題に正解', condition: s => s.history.some(h => h.correct && h.question.includes('SUM')) },
+  { id: 'ipass_beginner', emoji: '💐', name: 'ITパスポート挑戦中', desc: 'ITパスポートを初めて解いた', condition: s => s.history.some(h => h.category === 'ITパスポート') },
+  { id: 'streak3', emoji: '🔥', name: '3日連続', desc: '3日連続で学習', condition: s => s.streak >= 3 },
+  { id: 'streak7', emoji: '⭐', name: '7日連続', desc: '7日連続で学習', condition: s => s.streak >= 7 },
+  { id: 'streak14', emoji: '🌟', name: '14日連続', desc: '14日連続で学習', condition: s => s.streak >= 14 },
+  { id: 'level5', emoji: '🏆', name: 'Lv5到達', desc: 'レベル5に到達', condition: s => s.level >= 5 },
+  { id: 'level10', emoji: '💎', name: 'Lv10到達', desc: 'レベル10に到達', condition: s => s.level >= 10 },
+  { id: 'coins500', emoji: '💰', name: '貯金家', desc: 'コイン500枚獲得', condition: s => s.coin >= 500 },
+  { id: 'flowers20', emoji: '🌷', name: '花畑', desc: '花を20本育てた', condition: s => s.flowers.length >= 20 },
+  { id: 'perfect5', emoji: '✨', name: 'パーフェクト', desc: '5問全問正解', condition: s => s.history.some(h => h.total === 5 && h.correct === 5) },
+  { id: 'cafe3', emoji: '☕', name: 'カフェ開店', desc: 'メニューを3つ揃えた', condition: s => s.cafeMenu.length >= 3 },
+  { id: 'room5', emoji: '🏡', name: 'インテリア好き', desc: 'お部屋に5つ家具を置いた', condition: s => s.roomItems.length >= 5 },
+  { id: 'all_categories', emoji: '🌈', name: 'フルセット', desc: '全カテゴリを解いた', condition: s => { const cats = new Set(s.history.map(h=>h.category)); return cats.has('Excel') && cats.has('ITパスポート'); } }
+];
+
+const CUSTOMER_SPEECHES = [
+  "きれいなお花ですね！",
+  "いい香りがしますね〜",
+  "これ、おしゃれですね！",
+  "また来ますね！",
+  "プレゼントにぴったり！",
+  "素敵なお花屋さんです",
+  "いつも助かってます！",
+  "毎日楽しみにしてます！",
+  "友達にも勧めますね",
+  "最高です！★★★★★"
+];
+
+const LEVEL_XP = [0, 50, 120, 200, 300, 420, 560, 720, 900, 1100, 1350, 1650, 2000, 2400, 2900, 3500, 4200, 5000, 6000, 7200];
+
+// ====== STATE MANAGEMENT ======
+function loadState() {
+  try {
+    const saved = localStorage.getItem('hanamaru_state');
+    if (saved) return { ...DEFAULT_STATE, ...JSON.parse(saved) };
+  } catch(e) {}
+  return { ...DEFAULT_STATE };
+}
+
+function saveState() {
+  localStorage.setItem('hanamaru_state', JSON.stringify(state));
+}
+
+function updateStreak() {
+  const today = new Date().toISOString().split('T')[0];
+  if (state.lastPlayDate === today) return;
+
+  const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+  if (state.lastPlayDate === yesterday) {
+    state.streak++;
+  } else if (state.lastPlayDate !== today) {
+    state.streak = 1;
+  }
+  state.lastPlayDate = today;
+  saveState();
+}
+
+function addXP(amount) {
+  state.xp += amount;
+  while (state.level < LEVEL_XP.length && state.xp >= LEVEL_XP[state.level]) {
+    state.level++;
+    showToast(`🎉 レベルアップ！ Lv.${state.level} に到達！`);
+    launchConfetti();
+  }
+  saveState();
+}
+
+function addCoin(amount) {
+  state.coin += amount;
+  saveState();
+}
+
+// ====== SCREEN MANAGEMENT ======
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById(id);
+  if (el) el.classList.add('active');
+
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  const navMap = { 'top': 0, 'flower-screen': 1, 'quick5-screen': 2, 'badge-screen': 3, 'settings-screen': 4 };
+  const idx = navMap[id];
+  if (idx !== undefined) document.querySelectorAll('.nav-btn')[idx].classList.add('active');
+
+  updateUI();
+}
+
+function updateUI() {
+  document.getElementById('heroAvatar').textContent = state.level >= 10 ? '👩‍🌾' : state.level >= 5 ? '🧑‍🌾' : '👩';
+  document.getElementById('heroName').textContent = state.name + 'さん';
+  document.getElementById('heroLevel').textContent = state.level;
+  document.getElementById('heroFlowers').textContent = state.flowers.length;
+  document.getElementById('heroCoins').textContent = state.coin;
+  document.getElementById('heroStreak').textContent = state.streak;
+  document.getElementById('statTotal').textContent = state.totalAnswered;
+  document.getElementById('statCorrect').textContent = state.totalCorrect;
+  document.getElementById('statAccuracy').textContent = state.totalAnswered > 0 ? Math.round(state.totalCorrect / state.totalAnswered * 100) + '%' : '0%';
+  document.getElementById('statXP').textContent = state.xp;
+  document.getElementById('settingName').textContent = state.name + 'さん';
+
+  updateFlowerShop();
+  updateBadges();
+  updateStamps();
+  updateCafe();
+}
+
+// ====== QUIZ ENGINE ======
+function getAvailableQuestions(filter = null) {
+  const all = JSON.parse(document.getElementById('allQuestions').textContent);
+  let pool = all;
+  if (filter === 'excel') pool = pool.filter(q => q.category === 'Excel');
+  else if (filter === 'it') pool = pool.filter(q => q.category === 'ITパスポート');
+  else if (filter === 'word') pool = pool.filter(q => q.category === 'Word');
+  else if (filter === 'ppt') pool = pool.filter(q => q.category === 'PowerPoint');
+  return pool;
+}
+
+function shuffleArray(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function startMode(mode) {
+  currentMode = mode;
+  updateStreak();
+
+  if (mode === 'flower' || mode === 'quick5') {
+    const questions = getAvailableQuestions();
+    currentQuiz = shuffleArray(questions).slice(0, mode === 'quick5' ? 999 : 5);
+    quizIndex = 0;
+    quizCorrect = 0;
+    quizXP = 0;
+    quizCoin = 0;
+    quizFlowerCount = 0;
+
+    if (mode === 'flower') {
+      showScreen('quiz');
+      document.getElementById('quizTitle').textContent = '🌸 はなまるExcel';
+      document.getElementById('quizSubtitle').textContent = '花を育てながら学びましょう';
+    } else {
+      showScreen('quick5-screen');
+      startQuick5();
+      return;
+    }
+    showQuestion();
+    return;
+  }
+
+  if (mode === 'shop') {
+    showScreen('flower-screen');
+    return;
+  }
+
+  if (mode === 'room') {
+    showScreen('quiz');
+    document.getElementById('quizTitle').textContent = '🏡 おうちでMOS';
+    document.getElementById('quizSubtitle').textContent = 'お部屋を完成させましょう';
+    const questions = getAvailableQuestions();
+    currentQuiz = shuffleArray(questions).slice(0, 5);
+    quizIndex = 0;
+    quizCorrect = 0;
+    quizXP = 0;
+    quizCoin = 0;
+    quizFlowerCount = 0;
+    showQuestion();
+    return;
+  }
+
+  if (mode === 'tree') {
+    showScreen('quiz');
+    document.getElementById('quizTitle').textContent = '🌳 花咲くOffice';
+    document.getElementById('quizSubtitle').textContent = '一本の木を育てましょう';
+    const questions = getAvailableQuestions();
+    currentQuiz = shuffleArray(questions).slice(0, 5);
+    quizIndex = 0;
+    quizCorrect = 0;
+    quizXP = 0;
+    quizCoin = 0;
+    quizFlowerCount = 0;
+    showQuestion();
+    return;
+  }
+
+  if (mode === 'cafe') {
+    showScreen('quiz');
+    document.getElementById('quizTitle').textContent = '☕ おうちカフェ';
+    document.getElementById('quizSubtitle').textContent = 'カフェ経営をしながら学習';
+    const questions = getAvailableQuestions();
+    currentQuiz = shuffleArray(questions).slice(0, 5);
+    quizIndex = 0;
+    quizCorrect = 0;
+    quizXP = 0;
+    quizCoin = 0;
+    quizFlowerCount = 0;
+    showQuestion();
+    return;
+  }
+}
+
+function showQuestion() {
+  if (quizIndex >= currentQuiz.length) {
+    finishQuiz();
+    return;
+  }
+
+  const q = currentQuiz[quizIndex];
+  document.getElementById('qProgress').textContent = `${quizIndex + 1} / ${currentQuiz.length}`;
+  document.getElementById('qProgressBar').style.width = `${(quizIndex / currentQuiz.length) * 100}%`;
+  document.getElementById('qCategory').textContent = q.category;
+  document.getElementById('qText').textContent = q.question;
+
+  const flowersNeeded = currentQuiz.length - quizIndex - 1;
+  const dots = document.getElementById('flowerDots');
+  dots.innerHTML = '';
+  for (let i = 0; i < Math.min(flowersNeeded, 5); i++) {
+    const span = document.createElement('span');
+    span.textContent = q.flower || '🌱';
+    span.style.animationDelay = (i * 0.1) + 's';
+    dots.appendChild(span);
+  }
+
+  const choices = document.getElementById('qChoices');
+  choices.innerHTML = '';
+  const labels = ['①', '②', '③', '④'];
+  q.choices.forEach((c, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.innerHTML = `<span class="num">${labels[i]}</span><span>${c}</span>`;
+    btn.onclick = () => selectAnswer(i);
+    choices.appendChild(btn);
+  });
+
+  document.getElementById('qExplanation').classList.remove('show');
+  document.getElementById('nextArea').classList.remove('show');
+}
+
+function selectAnswer(idx) {
+  const q = currentQuiz[quizIndex];
+  const buttons = document.querySelectorAll('#qChoices .choice-btn');
+  buttons.forEach(b => b.disabled = true);
+
+  const isCorrect = idx === q.answer;
+
+  if (isCorrect) {
+    buttons[idx].classList.add('correct');
+    quizCorrect++;
+    const xpGain = 10 + (q.level || 1) * 5;
+    const coinGain = 5 + (q.level || 1) * 3;
+    quizXP += xpGain;
+    quizCoin += coinGain;
+    quizFlowerCount++;
+    addXP(xpGain);
+    addCoin(coinGain);
+    state.flowers.push(q.flower || '🌱');
+    showToast(`✨ 正解！ ${q.flower || '🌱'} +${xpGain}XP +${coinGain}🪙`);
+  } else {
+    buttons[idx].classList.add('wrong');
+    buttons[q.answer].classList.add('correct');
+    showToast('残念… お勉強不足です 📖');
+  }
+
+  state.totalAnswered++;
+  if (isCorrect) state.totalCorrect++;
+
+  state.history.unshift({
+    question: q.question,
+    category: q.category,
+    correct: isCorrect,
+    date: new Date().toISOString(),
+    total: currentQuiz.length,
+    correct: quizCorrect
+  });
+
+  if (state.history.length > 200) state.history = state.history.slice(0, 200);
+
+  state.questionHistory.push(q.question);
+
+  document.getElementById('qExplainText').textContent = q.explanation;
+  document.getElementById('qExplanation').classList.add('show');
+  document.getElementById('nextArea').classList.add('show');
+
+  updateBadges();
+  saveState();
+}
+
+function nextQuestion() {
+  quizIndex++;
+  showQuestion();
+}
+
+function finishQuiz() {
+  const accuracy = currentQuiz.length > 0 ? Math.round(quizCorrect / currentQuiz.length * 100) : 0;
+  let emoji = '🎉';
+  let title = 'お疲れ様！';
+  let desc = '';
+
+  if (accuracy === 100) { emoji = '🏆'; title = 'パーフェクト！'; desc = '全問正解！素晴らしい！'; launchConfetti(); }
+  else if (accuracy >= 80) { emoji = '🌟'; title = 'すごい！'; desc = `${currentQuiz.length}問中${quizCorrect}問正解！`; }
+  else if (accuracy >= 60) { emoji = '😊'; title = 'よくできました！'; desc = `${quizCorrect}問正解。もう少し頑張ろう！`; }
+  else { emoji = '💪'; title = 'がんばった！'; desc = `次はもっと正解を目指しましょう！`; }
+
+  document.getElementById('modalEmoji').textContent = emoji;
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalDesc').textContent = desc;
+  document.getElementById('modalXP').textContent = '+' + quizXP;
+  document.getElementById('modalCoin').textContent = '+' + quizCoin;
+  document.getElementById('modalFlower').textContent = '+' + quizFlowerCount;
+
+  const today = new Date().toISOString().split('T')[0];
+  if (state.todayDate !== today) {
+    state.todayDate = today;
+    state.todayAnswered = 0;
+    state.todayCorrect = 0;
+  }
+  state.todayAnswered += currentQuiz.length;
+  state.todayCorrect += quizCorrect;
+
+  if (state.stamps[today] === undefined) state.stamps[today] = 0;
+  state.stamps[today] = state.todayAnswered;
+
+  checkUnlocks();
+  saveState();
+
+  document.getElementById('resultModal').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('resultModal').classList.remove('show');
+  showScreen('top');
+}
+
+// ====== QUICK 5 MIN ======
+function startQuick5() {
+  quick5Time = 300;
+  quick5Active = false;
+  quick5CorrectCount = 0;
+  quick5TotalCount = 0;
+  quick5XP = 0;
+
+  const questions = getAvailableQuestions();
+  currentQuiz = shuffleArray(questions).slice(0, 20);
+  quizIndex = 0;
+  quizCorrect = 0;
+  quizXP = 0;
+  quizCoin = 0;
+  quizFlowerCount = 0;
+
+  document.getElementById('quickCorrect').textContent = '0';
+  document.getElementById('quickTotal').textContent = '0';
+  document.getElementById('quickXP').textContent = '0';
+  document.getElementById('timerDisplay').textContent = '5:00';
+  document.getElementById('quickStartArea').style.display = 'block';
+  document.getElementById('quickQuizArea').style.display = 'none';
+
+  showScreen('quick5-screen');
+}
+
+function startQuick5Timer() {
+  quick5Active = true;
+  document.getElementById('quickStartArea').style.display = 'none';
+  document.getElementById('quickQuizArea').style.display = 'block';
+
+  showQuickQuestion();
+
+  quick5Timer = setInterval(() => {
+    quick5Time--;
+    const min = Math.floor(quick5Time / 60);
+    const sec = quick5Time % 60;
+    document.getElementById('timerDisplay').textContent = `${min}:${String(sec).padStart(2, '0')}`;
+
+    if (quick5Time <= 60) {
+      document.getElementById('timerDisplay').style.background = 'linear-gradient(135deg, #e53935, #c62828)';
+    }
+
+    if (quick5Time <= 0) {
+      clearInterval(quick5Timer);
+      finishQuick5();
+    }
+  }, 1000);
+}
+
+function showQuickQuestion() {
+  if (quizIndex >= currentQuiz.length) {
+    finishQuick5();
+    return;
+  }
+
+  const q = currentQuiz[quizIndex];
+  document.getElementById('quickQText').textContent = q.question;
+
+  const choices = document.getElementById('quickQChoices');
+  choices.innerHTML = '';
+  const labels = ['①', '②', '③', '④'];
+  q.choices.forEach((c, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.innerHTML = `<span class="num">${labels[i]}</span><span>${c}</span>`;
+    btn.onclick = () => selectQuickAnswer(i);
+    choices.appendChild(btn);
+  });
+
+  document.getElementById('quickExplanation').classList.remove('show');
+}
+
+function selectQuickAnswer(idx) {
+  const q = currentQuiz[quizIndex];
+  const buttons = document.querySelectorAll('#quickQChoices .choice-btn');
+  buttons.forEach(b => b.disabled = true);
+
+  const isCorrect = idx === q.answer;
+  quick5TotalCount++;
+
+  if (isCorrect) {
+    buttons[idx].classList.add('correct');
+    quick5CorrectCount++;
+    quizCorrect++;
+    const xpGain = 10 + (q.level || 1) * 5;
+    const coinGain = 5 + (q.level || 1) * 3;
+    quick5XP += xpGain;
+    quizXP += xpGain;
+    quizCoin += coinGain;
+    quizFlowerCount++;
+    addXP(xpGain);
+    addCoin(coinGain);
+    state.flowers.push(q.flower || '🌱');
+  } else {
+    buttons[idx].classList.add('wrong');
+    buttons[q.answer].classList.add('correct');
+  }
+
+  state.totalAnswered++;
+  if (isCorrect) state.totalCorrect++;
+
+  state.history.unshift({
+    question: q.question,
+    category: q.category,
+    correct: isCorrect,
+    date: new Date().toISOString(),
+    total: currentQuiz.length,
+    correct: quizCorrect
+  });
+
+  document.getElementById('quickCorrect').textContent = quick5CorrectCount;
+  document.getElementById('quickTotal').textContent = quick5TotalCount;
+  document.getElementById('quickXP').textContent = quick5XP;
+
+  document.getElementById('quickExplainText').textContent = q.explanation;
+  document.getElementById('quickExplanation').classList.add('show');
+
+  setTimeout(() => {
+    quizIndex++;
+    showQuickQuestion();
+  }, 1200);
+
+  saveState();
+}
+
+function finishQuick5() {
+  if (quick5Timer) clearInterval(quick5Timer);
+  quick5Active = false;
+  document.getElementById('timerDisplay').style.background = 'linear-gradient(135deg, var(--mint), #7bc8a4)';
+
+  const today = new Date().toISOString().split('T')[0];
+  if (state.todayDate !== today) {
+    state.todayDate = today;
+    state.todayAnswered = 0;
+    state.todayCorrect = 0;
+  }
+  state.todayAnswered += quick5TotalCount;
+  state.todayCorrect += quick5CorrectCount;
+
+  if (state.stamps[today] === undefined) state.stamps[today] = 0;
+  state.stamps[today] = state.todayAnswered;
+
+  checkUnlocks();
+
+  document.getElementById('modalEmoji').textContent = quick5CorrectCount === quick5TotalCount ? '🏆' : '⏱️';
+  document.getElementById('modalTitle').textContent = 'タイムアップ！';
+  document.getElementById('modalDesc').textContent = `${quick5TotalCount}問中${quick5CorrectCount}問正解`;
+  document.getElementById('modalXP').textContent = '+' + quick5XP;
+  document.getElementById('modalCoin').textContent = '+' + quizCoin;
+  document.getElementById('modalFlower').textContent = '+' + quizFlowerCount;
+  document.getElementById('resultModal').classList.add('show');
+  saveState();
+}
+
+// ====== FLOWER SHOP ======
+function updateFlowerShop() {
+  document.getElementById('flowerCount').textContent = state.flowers.length;
+  document.getElementById('flowerCoins').textContent = state.coin;
+
+  const rank = state.flowers.length >= 50 ? '💐' : state.flowers.length >= 30 ? '🌹' : state.flowers.length >= 15 ? '🌷' : state.flowers.length >= 5 ? '🌼' : '🌱';
+  document.getElementById('flowerRank').textContent = rank;
+
+  const shelf = document.getElementById('flowerShelf');
+  shelf.innerHTML = '';
+  const displayFlowers = state.flowers.slice(-30);
+  displayFlowers.forEach((f, i) => {
+    const span = document.createElement('span');
+    span.className = 'flower-item';
+    span.textContent = f;
+    span.style.animationDelay = (i * 0.05) + 's';
+    shelf.appendChild(span);
+  });
+
+  if (state.totalCorrect >= 20) {
+    document.getElementById('customerArea').style.display = 'flex';
+    document.getElementById('customerSpeech').textContent = CUSTOMER_SPEECHES[Math.floor(Math.random() * CUSTOMER_SPEECHES.length)];
+  }
+
+  const shopItems = document.getElementById('flowerShopItems');
+  shopItems.innerHTML = '';
+  SHOP_ITEMS.forEach(item => {
+    const owned = state.ownedItems.includes(item.id);
+    const div = document.createElement('div');
+    div.className = 'shop-item' + (owned ? ' owned' : '');
+    div.innerHTML = `<span class="item-emoji">${item.emoji}</span><div class="item-name">${item.name}</div><div class="item-price">${owned ? '✓ 所持' : '🪙 ' + item.price}</div>`;
+    if (!owned) {
+      div.onclick = () => buyItem(item);
+    }
+    shopItems.appendChild(div);
+  });
+}
+
+function buyItem(item) {
+  if (state.coin >= item.price) {
+    state.coin -= item.price;
+    state.ownedItems.push(item.id);
+    if (item.type === 'room') state.roomItems.push(item.emoji);
+    showToast(`${item.emoji} ${item.name}を購入しました！`);
+    saveState();
+    updateUI();
+  } else {
+    showToast('🪙 コインが足りません…');
+  }
+}
+
+// ====== BADGES ======
+function updateBadges() {
+  const grid = document.getElementById('badgeGrid');
+  grid.innerHTML = '';
+  BADGES.forEach(badge => {
+    const earned = badge.condition(state);
+    if (earned && !state.badges.includes(badge.id)) {
+      state.badges.push(badge.id);
+    }
+    const div = document.createElement('div');
+    div.className = 'badge-item' + (earned ? '' : ' locked');
+    div.innerHTML = `<span class="badge-emoji">${badge.emoji}</span><div class="badge-name">${badge.name}</div><div class="badge-desc">${badge.desc}</div>`;
+    grid.appendChild(div);
+  });
+  saveState();
+}
+
+function checkUnlocks() {
+  BADGES.forEach(badge => {
+    if (badge.condition(state) && !state.badges.includes(badge.id)) {
+      state.badges.push(badge.id);
+      showToast(`🏆 バッジ獲得！「${badge.name}」`);
+    }
+  });
+}
+
+// ====== STAMPS ======
+function updateStamps() {
+  const grid = document.getElementById('stampGrid');
+  grid.innerHTML = '';
+  const now = new Date();
+  const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const stamp = document.createElement('div');
+    stamp.className = 'stamp' + (state.stamps[dateStr] >= 5 ? ' filled' : '');
+    stamp.textContent = state.stamps[dateStr] >= 5 ? '🌸' : (d <= now.getDate() ? '○' : '');
+    grid.appendChild(stamp);
+  }
+}
+
+// ====== CAFE ======
+function updateCafe() {
+  const revenue = document.getElementById('cafeRevenue');
+  if (revenue) revenue.textContent = state.cafeRevenue + '円';
+}
+
+// ====== UTILITIES ======
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+function launchConfetti() {
+  const colors = ['#f8c8d4', '#b8e6d0', '#f5e6d3', '#d4c5e2', '#e8b84b', '#e8878f', '#a8d8ea'];
+  for (let i = 0; i < 30; i++) {
+    const confetti = document.createElement('div');
+    confetti.className = 'confetti';
+    confetti.style.left = Math.random() * 100 + 'vw';
+    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+    confetti.style.animationDuration = (1.5 + Math.random() * 1.5) + 's';
+    confetti.style.animationDelay = (Math.random() * 0.5) + 's';
+    confetti.style.width = (6 + Math.random() * 8) + 'px';
+    confetti.style.height = (6 + Math.random() * 8) + 'px';
+    confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+    document.body.appendChild(confetti);
+    setTimeout(() => confetti.remove(), 3000);
+  }
+}
+
+function changeName() {
+  const name = prompt('お名前を入力してください', state.name);
+  if (name && name.trim()) {
+    state.name = name.trim();
+    saveState();
+    updateUI();
+    showToast(`こんにちは、${state.name}さん！`);
+  }
+}
+
+function resetData() {
+  if (confirm('本当にデータをリセットしますか？\nこの操作は取り消せません。')) {
+    localStorage.removeItem('hanamaru_state');
+    state = { ...DEFAULT_STATE };
+    saveState();
+    updateUI();
+    showScreen('top');
+    showToast('データをリセットしました');
+  }
+}
+
+// ====== INIT ======
+document.addEventListener('DOMContentLoaded', () => {
+  updateStreak();
+  updateUI();
+
+  const today = new Date().toISOString().split('T')[0];
+  if (state.todayDate !== today) {
+    state.todayDate = today;
+    state.todayAnswered = 0;
+    state.todayCorrect = 0;
+  }
+  saveState();
+});
+
+// Start quick5 on button click
+document.addEventListener('click', (e) => {
+  if (e.target.closest('#quickStartArea .btn-mint') || (e.target.textContent.includes('▶ スタート') && e.target.closest('#quickStartArea'))) {
+    startQuick5Timer();
+  }
+});
+</script>
+
+</body>
+</html>
