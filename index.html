@@ -2024,13 +2024,64 @@ function shuffleArray(arr) {
   return a;
 }
 
+// ====== ADAPTIVE DIFFICULTY ======
+function getRecentAccuracy(count = 10) {
+  const recent = state.history.slice(0, count);
+  if (recent.length === 0) return 0.5;
+  const correct = recent.filter(h => h.correct).length;
+  return correct / recent.length;
+}
+
+function getAdaptiveMaxLevel() {
+  const acc = getRecentAccuracy();
+  if (acc < 0.3) return 1;
+  if (acc < 0.5) return 2;
+  if (acc < 0.75) return 3;
+  return 99;
+}
+
+function getAdaptiveQuestions(pool, count) {
+  const maxLevel = getAdaptiveMaxLevel();
+  let filtered = pool.filter(q => (q.level || 1) <= maxLevel);
+  if (filtered.length < count) filtered = pool;
+  return shuffleArray(filtered).slice(0, count);
+}
+
+function getDifficultyLabel() {
+  const acc = getRecentAccuracy();
+  if (acc < 0.3) return { label: '🌱 超初級', color: '#8fbc8f' };
+  if (acc < 0.5) return { label: '🌼 初級', color: '#e8b84b' };
+  if (acc < 0.75) return { label: '🌷 中級', color: '#e8878f' };
+  return { label: '🌹 上級', color: '#d4738a' };
+}
+
+let pendingEasier = false;
+
+function adaptAfterAnswer(isCorrect) {
+  if (!isCorrect) {
+    pendingEasier = true;
+  } else {
+    pendingEasier = false;
+  }
+}
+
+function getNextAdaptiveQuestion() {
+  if (!pendingEasier) return null;
+  pendingEasier = false;
+  const pool = getAvailableQuestions();
+  const easy = pool.filter(q => (q.level || 1) <= 1);
+  const shuffled = shuffleArray(easy);
+  return shuffled[0] || null;
+}
+
 function startMode(mode) {
   currentMode = mode;
   updateStreak();
+  pendingEasier = false;
 
   if (mode === 'flower' || mode === 'quick5') {
     const questions = getAvailableQuestions();
-    currentQuiz = shuffleArray(questions).slice(0, mode === 'quick5' ? 999 : 5);
+    currentQuiz = getAdaptiveQuestions(questions, mode === 'quick5' ? 999 : 5);
     quizIndex = 0;
     quizCorrect = 0;
     quizXP = 0;
@@ -2060,7 +2111,7 @@ function startMode(mode) {
     document.getElementById('quizTitle').textContent = '🏡 おうちでMOS';
     document.getElementById('quizSubtitle').textContent = 'お部屋を完成させましょう';
     const questions = getAvailableQuestions();
-    currentQuiz = shuffleArray(questions).slice(0, 5);
+    currentQuiz = getAdaptiveQuestions(questions, 5);
     quizIndex = 0;
     quizCorrect = 0;
     quizXP = 0;
@@ -2075,7 +2126,7 @@ function startMode(mode) {
     document.getElementById('quizTitle').textContent = '🌳 花咲くOffice';
     document.getElementById('quizSubtitle').textContent = '一本の木を育てましょう';
     const questions = getAvailableQuestions();
-    currentQuiz = shuffleArray(questions).slice(0, 5);
+    currentQuiz = getAdaptiveQuestions(questions, 5);
     quizIndex = 0;
     quizCorrect = 0;
     quizXP = 0;
@@ -2090,7 +2141,7 @@ function startMode(mode) {
     document.getElementById('quizTitle').textContent = '☕ おうちカフェ';
     document.getElementById('quizSubtitle').textContent = 'カフェ経営をしながら学習';
     const questions = getAvailableQuestions();
-    currentQuiz = shuffleArray(questions).slice(0, 5);
+    currentQuiz = getAdaptiveQuestions(questions, 5);
     quizIndex = 0;
     quizCorrect = 0;
     quizXP = 0;
@@ -2112,6 +2163,17 @@ function showQuestion() {
   document.getElementById('qProgressBar').style.width = `${(quizIndex / currentQuiz.length) * 100}%`;
   document.getElementById('qCategory').textContent = q.category;
   document.getElementById('qText').textContent = q.question;
+
+  const diff = getDifficultyLabel();
+  let diffEl = document.getElementById('qDifficulty');
+  if (!diffEl) {
+    diffEl = document.createElement('div');
+    diffEl.id = 'qDifficulty';
+    diffEl.style.cssText = 'text-align:center;margin-bottom:10px;font-size:12px;font-weight:600;';
+    document.querySelector('.quiz-category').after(diffEl);
+  }
+  diffEl.textContent = diff.label;
+  diffEl.style.color = diff.color;
 
   const flowersNeeded = currentQuiz.length - quizIndex - 1;
   const dots = document.getElementById('flowerDots');
@@ -2160,8 +2222,15 @@ function selectAnswer(idx) {
   } else {
     buttons[idx].classList.add('wrong');
     buttons[q.answer].classList.add('correct');
-    showToast('残念… お勉強不足です 📖');
+    showToast('残念… もっとゆっくり読みましょう 📖');
+
+    const easier = getNextAdaptiveQuestion();
+    if (easier && quizIndex + 1 < currentQuiz.length) {
+      currentQuiz.splice(quizIndex + 1, 0, easier);
+    }
   }
+
+  adaptAfterAnswer(isCorrect);
 
   state.totalAnswered++;
   if (isCorrect) state.totalCorrect++;
@@ -2292,6 +2361,17 @@ function showQuickQuestion() {
   const q = currentQuiz[quizIndex];
   document.getElementById('quickQText').textContent = q.question;
 
+  const diff = getDifficultyLabel();
+  let diffEl = document.getElementById('quickDifficulty');
+  if (!diffEl) {
+    diffEl = document.createElement('div');
+    diffEl.id = 'quickDifficulty';
+    diffEl.style.cssText = 'text-align:center;margin-bottom:10px;font-size:12px;font-weight:600;';
+    document.querySelector('#quickQuizArea .quiz-question').before(diffEl);
+  }
+  diffEl.textContent = diff.label;
+  diffEl.style.color = diff.color;
+
   const choices = document.getElementById('quickQChoices');
   choices.innerHTML = '';
   const labels = ['①', '②', '③', '④'];
@@ -2330,7 +2410,13 @@ function selectQuickAnswer(idx) {
   } else {
     buttons[idx].classList.add('wrong');
     buttons[q.answer].classList.add('correct');
+    const easier = getNextAdaptiveQuestion();
+    if (easier) {
+      currentQuiz.splice(quizIndex + 1, 0, easier);
+    }
   }
+
+  adaptAfterAnswer(isCorrect);
 
   state.totalAnswered++;
   if (isCorrect) state.totalCorrect++;
