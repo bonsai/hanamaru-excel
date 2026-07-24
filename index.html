@@ -985,6 +985,45 @@ body {
 .cafe-menu-item .cafe-emoji { font-size: 28px; display: block; }
 .cafe-menu-item .cafe-name { font-size: 11px; font-weight: 600; margin-top: 4px; }
 .cafe-menu-item .cafe-price { font-size: 11px; color: var(--gold); }
+
+/* ====== NAME INPUT MODAL ====== */
+#nameModal .name-input-wrap {
+  display: flex;
+  gap: 8px;
+  margin: 15px 0;
+}
+
+#nameModal .name-input {
+  flex: 1;
+  padding: 14px 16px;
+  border: 2px solid #eee;
+  border-radius: var(--radius-sm);
+  font-size: 18px;
+  font-family: inherit;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.3s;
+  background: var(--cream);
+}
+
+#nameModal .name-input:focus {
+  border-color: var(--rose);
+}
+
+#nameModal .name-input::placeholder {
+  color: #ccc;
+}
+
+.hero-name {
+  cursor: pointer;
+  transition: background 0.3s;
+  padding: 2px 12px;
+  border-radius: 20px;
+}
+
+.hero-name:hover {
+  background: rgba(255,255,255,0.5);
+}
 </style>
 </head>
 <body>
@@ -994,7 +1033,7 @@ body {
   <div class="hero">
     <div class="hero-profile">
       <div class="hero-avatar" id="heroAvatar">👩‍🌾</div>
-      <div class="hero-name" id="heroName">りなさん</div>
+      <div class="hero-name" id="heroName" onclick="changeName()">りなさん</div>
       <div class="hero-level">⭐ Lv.<span id="heroLevel">1</span></div>
       <div class="hero-stats">
         <div class="hero-stat"><span class="flower-pink">🌸</span> <span id="heroFlowers">0</span>本</div>
@@ -1240,7 +1279,20 @@ body {
   </div>
 </div>
 
-<!-- ====== MODAL ====== -->
+<!-- ====== NAME INPUT MODAL ====== -->
+<div class="modal-overlay" id="nameModal">
+  <div class="modal">
+    <span class="big-emoji">👋</span>
+    <h2>はじめまして！</h2>
+    <p>お名前を教えてください</p>
+    <div class="name-input-wrap">
+      <input type="text" class="name-input" id="nameInput" placeholder="お名前" maxlength="10" autocomplete="off">
+    </div>
+    <button class="btn btn-primary" style="width:100%" onclick="saveName()">🌸 はじめる</button>
+  </div>
+</div>
+
+<!-- ====== RESULT MODAL ====== -->
 <div class="modal-overlay" id="resultModal">
   <div class="modal">
     <span class="big-emoji" id="modalEmoji">🎉</span>
@@ -2452,14 +2504,36 @@ function launchConfetti() {
 }
 
 function changeName() {
-  const name = prompt('お名前を入力してください', state.name);
-  if (name && name.trim()) {
-    state.name = name.trim();
+  document.getElementById('nameInput').value = state.name === 'りな' ? '' : state.name;
+  document.getElementById('nameModal').classList.add('show');
+  setTimeout(() => document.getElementById('nameInput').focus(), 300);
+}
+
+function showNameModal() {
+  document.getElementById('nameInput').value = '';
+  document.getElementById('nameModal').classList.add('show');
+  setTimeout(() => document.getElementById('nameInput').focus(), 300);
+}
+
+function saveName() {
+  const name = document.getElementById('nameInput').value.trim();
+  if (name) {
+    state.name = name;
     saveState();
     updateUI();
+    document.getElementById('nameModal').classList.remove('show');
     showToast(`こんにちは、${state.name}さん！`);
+  } else {
+    document.getElementById('nameInput').style.borderColor = '#e53935';
+    setTimeout(() => document.getElementById('nameInput').style.borderColor = '', 1500);
   }
 }
+
+document.addEventListener('keydown', (e) => {
+  if (document.getElementById('nameModal').classList.contains('show') && e.key === 'Enter') {
+    saveName();
+  }
+});
 
 function resetData() {
   if (confirm('本当にデータをリセットしますか？\nこの操作は取り消せません。')) {
@@ -2484,6 +2558,11 @@ document.addEventListener('DOMContentLoaded', () => {
     state.todayCorrect = 0;
   }
   saveState();
+
+  // Show name input on first launch
+  if (state.name === 'りな' && state.totalAnswered === 0) {
+    setTimeout(() => showNameModal(), 600);
+  }
 });
 
 // Start quick5 on button click
