@@ -1044,9 +1044,9 @@ body {
       <div class="hero-name" id="heroName" onclick="changeName()">りなさん</div>
       <div class="hero-level">⭐ Lv.<span id="heroLevel">1</span></div>
       <div class="hero-stats">
+        <div class="hero-stat"><span class="coin-gold">💴</span> ¥<span id="heroCoins">0</span> たまった</div>
         <div class="hero-stat"><span class="flower-pink">🌸</span> <span id="heroFlowers">0</span>本</div>
-        <div class="hero-stat"><span class="coin-gold">🪙</span> <span id="heroCoins">0</span></div>
-        <div class="hero-stat"><span class="streak-fire">🔥</span> <span id="heroStreak">0</span>日</div>
+        <div class="hero-stat"><span class="streak-fire">🔥</span> <span id="heroStreak">0</span>日連続</div>
       </div>
     </div>
   </div>
@@ -1055,7 +1055,7 @@ body {
     <div class="stat-box"><div class="value" id="statTotal">0</div><div class="label">累計問題</div></div>
     <div class="stat-box"><div class="value" id="statCorrect">0</div><div class="label">正解数</div></div>
     <div class="stat-box"><div class="value" id="statAccuracy">0%</div><div class="label">正解率</div></div>
-    <div class="stat-box"><div class="value" id="statXP">0</div><div class="label">XP</div></div>
+    <div class="stat-box"><div class="value" id="statXP">0</div><div class="label">お小遣い</div></div>
   </div>
 
   <div class="today-recommend">
@@ -1168,7 +1168,7 @@ body {
 
   <div class="stat-grid" style="margin-top:15px">
     <div class="stat-box"><div class="value" id="flowerCount">0</div><div class="label">お花</div></div>
-    <div class="stat-box"><div class="value" id="flowerCoins">0</div><div class="label">🪙 コイン</div></div>
+    <div class="stat-box"><div class="value" id="flowerCoins">0</div><div class="label">💴 お金</div></div>
     <div class="stat-box"><div class="value" id="flowerLevel">1</div><div class="label">Lv</div></div>
     <div class="stat-box"><div class="value" id="flowerRank">🌱</div><div class="label">称号</div></div>
   </div>
@@ -1198,7 +1198,7 @@ body {
   <div class="timer-stats">
     <div class="timer-stat"><div class="val" id="quickCorrect">0</div><div class="lbl">正解</div></div>
     <div class="timer-stat"><div class="val" id="quickTotal">0</div><div class="lbl">問題数</div></div>
-    <div class="timer-stat"><div class="val" id="quickXP">0</div><div class="lbl">獲得XP</div></div>
+    <div class="timer-stat"><div class="val" id="quickXP">0</div><div class="lbl">獲得 💴</div></div>
   </div>
 
   <div id="quickQuizArea" style="padding:0 16px;margin-top:20px;display:none">
@@ -1307,7 +1307,7 @@ body {
     <h2 id="modalTitle">お疲れ様！</h2>
     <p id="modalDesc">今日の学習が完了しました</p>
     <div class="modal-rewards">
-      <div class="modal-reward"><span class="val" id="modalXP">+0</span><span>XP</span></div>
+      <div class="modal-reward"><span class="val" id="modalXP">+0</span><span>💴 お小遣い</span></div>
       <div class="modal-reward"><span class="val" id="modalCoin">+0</span><span>🪙</span></div>
       <div class="modal-reward"><span class="val" id="modalFlower">+0</span><span>🌸</span></div>
     </div>
@@ -1348,465 +1348,55 @@ body {
 <!-- ====== QUESTION DATA ====== -->
 <script id="allQuestions" type="application/json">
 [
-  {
-    "category": "Excel",
-    "level": 1,
-    "question": "セルを絶対参照にする記号は？",
-    "choices": ["#", "$", "@", "%"],
-    "answer": 1,
-    "explanation": "絶対参照は $A$1 のように $ を付けます。コピーしても参照先が変わりません。",
-    "flower": "🌱"
-  },
-  {
-    "category": "Excel",
-    "level": 1,
-    "question": "合計を求める関数は？",
-    "choices": ["AVG", "SUM", "MAX", "COUNT"],
-    "answer": 1,
-    "explanation": "SUM関数は範囲の合計を計算します。例：=SUM(A1:A10)",
-    "flower": "🌱"
-  },
-  {
-    "category": "Excel",
-    "level": 1,
-    "question": "平均を求める関数は？",
-    "choices": ["SUM", "AVERAGE", "MIN", "MEDIAN"],
-    "answer": 1,
-    "explanation": "AVERAGE関数は範囲の平均値を返します。",
-    "flower": "🌱"
-  },
-  {
-    "category": "Excel",
-    "level": 1,
-    "question": "最大値を求める関数は？",
-    "choices": ["MAX", "MIN", "LARGE", "TOP"],
-    "answer": 0,
-    "explanation": "MAX関数は範囲内の最大値を返します。",
-    "flower": "🌱"
-  },
-  {
-    "category": "Excel",
-    "level": 1,
-    "question": "列と行を入れ替える操作は？",
-    "choices": ["ソート", "フィルター", "行列の入れ替え", "分割"],
-    "answer": 2,
-    "explanation": "行列の入れ替え（Paste Special > Transpose）で行と列を入れ替えられます。",
-    "flower": "🌱"
-  },
-  {
-    "category": "Excel",
-    "level": 2,
-    "question": "条件に合ったデータだけ集計する関数は？",
-    "choices": ["SUMIF", "COUNT", "SUM", "INDEX"],
-    "answer": 0,
-    "explanation": "SUMIFは条件を満たすセルの合計を求めます。例：=SUMIF(A1:A10,\"東京\",B1:B10)",
-    "flower": "🌷"
-  },
-  {
-    "category": "Excel",
-    "level": 2,
-    "question": "条件に合った回数を数える関数は？",
-    "choices": ["COUNT", "COUNTIF", "COUNTA", "COUNTBLANK"],
-    "answer": 1,
-    "explanation": "COUNTIFは指定した条件に合ったセルの数を数えます。",
-    "flower": "🌷"
-  },
-  {
-    "category": "Excel",
-    "level": 2,
-    "question": "IF関数で「A1が100以上なら合格」を表す式は？",
-    "choices": ["=IF(A1>=100,\"合格\",\"不合格\")", "=IF(A1>100,\"合格\")", "=IF(100<=A1,\"合格\")", "=IF(A1=100,\"合格\")"],
-    "answer": 0,
-    "explanation": "IF関数は =IF(条件, 真の値, 假の値) の形式です。",
-    "flower": "🌷"
-  },
-  {
-    "category": "Excel",
-    "level": 2,
-    "question": "セルの書式設定で通貨表示にするショートカットは？",
-    "choices": ["Ctrl+Shift+$", "Ctrl+$", "Ctrl+Shift+C", "Ctrl+F"],
-    "answer": 0,
-    "explanation": "Ctrl+Shift+$ で通貨形式にできます。",
-    "flower": "🌷"
-  },
-  {
-    "category": "Excel",
-    "level": 2,
-    "question": "テーブルとして整形するショートカットは？",
-    "choices": ["Ctrl+T", "Ctrl+D", "Ctrl+L", "Ctrl+M"],
-    "answer": 0,
-    "explanation": "Ctrl+T で選択範囲をテーブルに変換します。",
-    "flower": "🌷"
-  },
-  {
-    "category": "Excel",
-    "level": 3,
-    "question": "VLOOKUP関数の正しい構文は？",
-    "choices": ["=VLOOKUP(検索値,範囲,列番号,検索方法)", "=VLOOKUP(範囲,検索値,列番号,検索方法)", "=VLOOKUP(列番号,検索値,範囲,検索方法)", "=VLOOKUP(検索値,列番号,範囲,検索方法)"],
-    "answer": 0,
-    "explanation": "=VLOOKUP(検索値, テーブル範囲, 列番号, FALSE) が基本形です。",
-    "flower": "🌹"
-  },
-  {
-    "category": "Excel",
-    "level": 3,
-    "question": "INDEX関数と組み合わせて使う関数は？",
-    "choices": ["MATCH", "SEARCH", "FIND", "LOOKUP"],
-    "answer": 0,
-    "explanation": "INDEX(範囲, MATCH(検索値, 範囲, 0)) はVLOOKUPより柔軟な参照が可能です。",
-    "flower": "🌹"
-  },
-  {
-    "category": "Excel",
-    "level": 3,
-    "question": "ピボットテーブルを作成するショートカットは？",
-    "choices": ["Alt+N+V", "Ctrl+P", "Alt+D+P", "Ctrl+Shift+P"],
-    "answer": 0,
-    "explanation": "Alt+N+V でピボットテーブルの挿入画面が開きます。旧バージョンは Alt+D+P。",
-    "flower": "🌹"
-  },
-  {
-    "category": "Excel",
-    "level": 3,
-    "question": "グラフの種類で、データの推移を見るのに適しているのは？",
-    "choices": ["折れ線グラフ", "棒グラフ", "円グラフ", "散布図"],
-    "answer": 0,
-    "explanation": "折れ線グラフは時系列データの変化や傾向の把握に最適です。",
-    "flower": "🌹"
-  },
-  {
-    "category": "Excel",
-    "level": 3,
-    "question": "XLOOKUP関数の特徴は？",
-    "choices": ["左方向にも検索できる", "数値しか検索できない", "1列しか使えない", "数式が必須"],
-    "answer": 0,
-    "explanation": "XLOOKUPはVLOOKUPと違い、左方向への検索やデフォルト値の指定が可能です。",
-    "flower": "🌹"
-  },
-  {
-    "category": "Excel",
-    "level": 4,
-    "question": "LAMBDA関数の役割は？",
-    "choices": ["独自の関数を定義する", "データをソートする", "条件付き書式を設定する", "チャートを作成する"],
-    "answer": 0,
-    "explanation": "LAMBDAで名前付きのカスタム関数を作成し、再利用できます。",
-    "flower": "💐"
-  },
-  {
-    "category": "Excel",
-    "level": 4,
-    "question": "FILTER関数で使われる第3引数は？",
-    "choices": ["エラー時の値", "ソート方法", "検索範囲", "行番号"],
-    "answer": 0,
-    "explanation": "FILTER(配列, 条件, エラー時の値) の第3引数は、フィルター結果が空の場合の代替値です。",
-    "flower": "💐"
-  },
-  {
-    "category": "Excel",
-    "level": 4,
-    "question": "UNIQUE関数の結果は？",
-    "choices": ["重複を除いた一意の値", "ソートされた値", "最大値と最小値", "平均値"],
-    "answer": 0,
-    "explanation": "UNIQUE関数は範囲から重複を除いた一意の値を返します。",
-    "flower": "💐"
-  },
-  {
-    "category": "ITパスポート",
-    "level": 1,
-    "question": "CPUの役割は？",
-    "choices": ["記憶", "演算・制御", "表示", "印刷"],
-    "answer": 1,
-    "explanation": "CPUはコンピュータの頭脳で、演算と制御を担当します。",
-    "flower": "🌱"
-  },
-  {
-    "category": "ITパスポート",
-    "level": 1,
-    "question": "RAMは何を保存する？",
-    "choices": ["一時データ", "永久データ", "OSのみ", "画像のみ"],
-    "answer": 0,
-    "explanation": "RAMはメインメモリで、電源を切ると内容が消える一時記憶装置です。",
-    "flower": "🌱"
-  },
-  {
-    "category": "ITパスポート",
-    "level": 1,
-    "question": "HDD・SSDは何の略？",
-    "choices": ["ハードディスクドライブ・ソリッドステートドライブ", "ハイテクデータ・システム", "ハードデータ・セーフ", "ホストディスク・セーフストア"],
-    "answer": 0,
-    "explanation": "HDDは磁気ディスク、SSDは半導体メモリを使った記憶装置です。",
-    "flower": "🌱"
-  },
-  {
-    "category": "ITパスポート",
-    "level": 1,
-    "question": "OSの例として正しいのは？",
-    "choices": ["Windows, macOS", "Excel, Word", "Chrome, Firefox", "Photoshop, Illustrator"],
-    "answer": 0,
-    "explanation": "OS（オペレーティングシステム）はWindows, macOS, Linuxなどです。",
-    "flower": "🌱"
-  },
-  {
-    "category": "ITパスポート",
-    "level": 1,
-    "question": "インターネットで使われる通信プロトコルは？",
-    "choices": ["HTTP, TCP/IP", "HTML, CSS", "Java, Python", "USB, HDMI"],
-    "answer": 0,
-    "explanation": "TCP/IPがインターネットの基盤プロトコルで、HTTPはWeb通信で使われます。",
-    "flower": "🌱"
-  },
-  {
-    "category": "ITパスポート",
-    "level": 2,
-    "question": "クラウドサービスの特徴は？",
-    "choices": ["ネット経由でサーバー資源を利用する", "専用サーバーを購入する", "オフラインで動作する", "USBで接続する"],
-    "answer": 0,
-    "explanation": "クラウドサービスはインターネット経由でサーバー、ストレージ、アプリケーションを利用できます。",
-    "flower": "🌷"
-  },
-  {
-    "category": "ITパスポート",
-    "level": 2,
-    "question": "IoTとは何の略？",
-    "choices": ["Internet of Things", "Input of Technology", "Info of Transfer", "Integrated Operating Tool"],
-    "answer": 0,
-    "explanation": "IoTは「物のインターネット」と呼ばれ、家電や車など様々なデバイスがネットに接続される仕組みです。",
-    "flower": "🌷"
-  },
-  {
-    "category": "ITパスポート",
-    "level": 2,
-    "question": "サイバーセキュリティの基本三要素は？",
-    "choices": ["機密性・完全性・可用性", "速度・容量・精度", "保存・検索・表示", "入力・処理・出力"],
-    "answer": 0,
-    "explanation": "CIA三要素（Confidentiality, Integrity, Availability）が情報セキュリティの基本です。",
-    "flower": "🌷"
-  },
-  {
-    "category": "ITパスポート",
-    "level": 2,
-    "question": "ERPシステムの役割は？",
-    "choices": ["企業の経営資源を統合管理", "メールの送受信", "Webサイトの作成", "画像の編集"],
-    "answer": 0,
-    "explanation": "ERP（Enterprise Resource Planning）は人事、会計、販売などの業務を統合的に管理するシステムです。",
-    "flower": "🌷"
-  },
-  {
-    "category": "ITパスポート",
-    "level": 2,
-    "question": "ビジネスにおける「DX」とは？",
-    "choices": ["デジタルトランスフォーメーション", "データエクスチェンジ", "ディスクサルファイド", "ダイレクトエクスポート"],
-    "answer": 0,
-    "explanation": "DXはデジタル技術を活用して業務やビジネスモデルを変革することです。",
-    "flower": "🌷"
-  },
-  {
-    "category": "ITパスポート",
-    "level": 3,
-    "question": "プロジェクト管理手法「アジャイル」の特徴は？",
-    "choices": ["短期サイクルで開発を繰り返す", "全工程を完了してから納品する", "設計書を最重視する", "外注を前提とする"],
-    "answer": 0,
-    "explanation": "アジャイルは2〜4週間のスプリントで小刻みに開発し、都度改善する手法です。",
-    "flower": "🌹"
-  },
-  {
-    "category": "ITパスポート",
-    "level": 3,
-    "question": "ブロックチェーンの特徴は？",
-    "choices": ["分散型で改ざんが難しい", "中央サーバーで管理される", "暗号化が不可能", "テキストのみ対応"],
-    "answer": 0,
-    "explanation": "ブロックチェーンは取記録を分散的に保存し、改ざんが困難な技術です。",
-    "flower": "🌹"
-  },
-  {
-    "category": "ITパスポート",
-    "level": 3,
-    "question": "AIの「教師あり学習」とは？",
-    "choices": ["正解付きデータで学習する", "正解なしでパターンを発見する", "人間が直接教える", "自ら試行錯誤する"],
-    "answer": 0,
-    "explanation": "教師あり学習は、入力と正解のペアをデータとして与え、パターンを学習させる手法です。",
-    "flower": "🌹"
-  },
-  {
-    "category": "ITパスポート",
-    "level": 3,
-    "question": "セキュリティ対策として「多要素認証」とは？",
-    "choices": ["複数の認証方法を組み合わせる", "パスワードを複数個使う", "複数のデバイスを使う", "複数回ログインする"],
-    "answer": 0,
-    "explanation": "多要素認証は、パスワード＋指紋やOTPなど異なる種類の認証を組み合わせる方法です。",
-    "flower": "🌹"
-  },
-  {
-    "category": "ITパスポート",
-    "level": 4,
-    "question": "マイクロサービスアーキテクチャの特徴は？",
-    "choices": ["機能ごとに小さなサービスに分ける", "すべてを1つの大きなサービスにする", "フロントエンドのみ開発する", "データベースのみ使用する"],
-    "answer": 0,
-    "explanation": "マイクロサービスはアプリを小さな独立したサービスに分割し、それぞれを個別に開発・運用する手法です。",
-    "flower": "💐"
-  },
-  {
-    "category": "ITパスポート",
-    "level": 4,
-    "question": "RPAの役割は？",
-    "choices": ["定型作業を自動化する", "データベースを構築する", "ネットワークを設計する", "セキュリティを強化する"],
-    "answer": 0,
-    "explanation": "RPA（Robotic Process Automation）は人間が行う定型的な業務をソフトウェアロボットで自動化する技術です。",
-    "flower": "💐"
-  },
-  {
-    "category": "Word",
-    "level": 1,
-    "question": "見出しスタイルの主な用途は？",
-    "choices": ["文書構造の整理", "文字装飾のみ", "画像挿入", "印刷設定"],
-    "answer": 0,
-    "explanation": "見出しスタイルは文書の構造を明確にし、目次作成やナビゲーションに利用します。",
-    "flower": "🌱"
-  },
-  {
-    "category": "Word",
-    "level": 2,
-    "question": "目次を自動作成するには？",
-    "choices": ["参考資料タブの目次", "挿入タブの目次", "ページレイアウト", "デザインタブ"],
-    "answer": 0,
-    "explanation": "参考資料タブから「目次」を挿入すると、見出しに基づいて自動で目次が作成されます。",
-    "flower": "🌷"
-  },
-  {
-    "category": "Word",
-    "level": 2,
-    "question": "ページ番号を挿入するには？",
-    "choices": ["挿入タブ → フッタ", "ホームタブ", "レイアウトタブ", "ファイルタブ"],
-    "answer": 0,
-    "explanation": "挿入タブのフッタまたはヘッダからページ番号を設定できます。",
-    "flower": "🌷"
-  },
-  {
-    "category": "PowerPoint",
-    "level": 1,
-    "question": "スライドショーを開始するショートカットは？",
-    "choices": ["F5", "F1", "Ctrl+P", "Alt+S"],
-    "answer": 0,
-    "explanation": "F5で最初から、Shift+F5で現在のスライドからスライドショーを開始します。",
-    "flower": "🌱"
-  },
-  {
-    "category": "PowerPoint",
-    "level": 2,
-    "question": "スライドの切り取り時間を指定できる機能は？",
-    "choices": ["スライドショータイミング", "アニメーションタイミング", "トランジション", "自動再生"],
-    "answer": 0,
-    "explanation": "スライドショータイミングで各スライドの表示時間を秒単位で指定できます。",
-    "flower": "🌷"
-  },
-  {
-    "category": "PowerPoint",
-    "level": 2,
-    "question": "スライド master の主な用途は？",
-    "choices": ["デザインの一括変更", "スライドショーの再生", "音声の挿入", "印刷設定"],
-    "answer": 0,
-    "explanation": "スライドマスターでフォントや配置を一括設定し、統一感のあるデザインを実現します。",
-    "flower": "🌷"
-  },
-  {
-    "category": "Excel",
-    "level": 2,
-    "question": "データの並び替えで「降順」は？",
-    "choices": ["大きい順", "小さい順", "ランダム", "五十音順のみ"],
-    "answer": 0,
-    "explanation": "降順はZ→A、9→1のように大きい順に並べることです。",
-    "flower": "🌷"
-  },
-  {
-    "category": "Excel",
-    "level": 1,
-    "question": "コピーのショートカットは？",
-    "choices": ["Ctrl+C", "Ctrl+V", "Ctrl+X", "Ctrl+Z"],
-    "answer": 0,
-    "explanation": "Ctrl+C でコピー、Ctrl+V で貼り付け、Ctrl+X で切り取り、Ctrl+Z で元に戻します。",
-    "flower": "🌱"
-  },
-  {
-    "category": "Excel",
-    "level": 1,
-    "question": "「元に戻す」のショートカットは？",
-    "choices": ["Ctrl+Z", "Ctrl+Y", "Ctrl+U", "Ctrl+A"],
-    "answer": 0,
-    "explanation": "Ctrl+Z で直前の操作を元に戻せます。Ctrl+Y でやり直します。",
-    "flower": "🌱"
-  },
-  {
-    "category": "Excel",
-    "level": 3,
-    "question": "CHOOSE関数で3番目の値を返す式は？",
-    "choices": ["=CHOOSE(3,\"A\",\"B\",\"C\",\"D\")", "=CHOOSE(A3,\"A\",\"B\",\"C\")", "=CHOOSE(3,A,B,C)", "=CHOOSE(C3,\"A\",\"B\")"],
-    "answer": 0,
-    "explanation": "CHOOSE(番号, 値1, 値2, ...)で、番号に対応した値を返します。3なら「C」。",
-    "flower": "🌹"
-  },
-  {
-    "category": "ITパスポート",
-    "level": 2,
-    "question": "VPNの主な目的は？",
-    "choices": ["安全な通信路を構築する", "速度を上げる", "容量を増やす", "画面をキャプチャする"],
-    "answer": 0,
-    "explanation": "VPNはインターネット上に仮想的な専用回線を構築し、通信を暗号化して安全に通信します。",
-    "flower": "🌷"
-  },
-  {
-    "category": "Excel",
-    "level": 4,
-    "question": "スプレッドシートで条件付き書式を設定する目的は？",
-    "choices": ["条件に応じてセルの見た目を変える", "データを削除する", "ファイルを圧縮する", "印刷範囲を設定する"],
-    "answer": 0,
-    "explanation": "条件付き書式は、値に応じて文字色や背景色を自動で変える機能です。",
-    "flower": "💐"
-  },
-  {
-    "category": "ITパスポート",
-    "level": 1,
-    "question": "キーボードで「全選択」するショートカットは？",
-    "choices": ["Ctrl+A", "Ctrl+S", "Ctrl+F", "Ctrl+R"],
-    "answer": 0,
-    "explanation": "Ctrl+A で現在の画面のすべてを選択します。AはAllの略です。",
-    "flower": "🌱"
-  },
-  {
-    "category": "Excel",
-    "level": 2,
-    "question": "相対参照と絶対参照の違いは？",
-    "choices": ["コピー時に参照先が変わるか変わらないか", "数値の精度の違い", "セルの色の違い", "関数の種類の違い"],
-    "answer": 0,
-    "explanation": "相対参照はコピー時にセルが変わり、絶対参照（$）は常に同じセルを指します。",
-    "flower": "🌷"
-  },
-  {
-    "category": "Excel",
-    "level": 3,
-    "question": "OFFSET関数の役割は？",
-    "choices": ["指定セルからずれた範囲を参照する", "データをソートする", "グラフを作成する", "ファイルを保存する"],
-    "answer": 0,
-    "explanation": "OFFSET(参照, 行, 列, [高さ], [幅]) で基準セルからずれた範囲を動的に参照できます。",
-    "flower": "🌹"
-  },
-  {
-    "category": "Word",
-    "level": 3,
-    "question": "差し込み印刷で使うデータソースの形式は？",
-    "choices": ["ExcelシートやCSV", "PDFのみ", "画像ファイルのみ", "HTMLのみ"],
-    "answer": 0,
-    "explanation": "差し込み印刷ではExcelファイルやCSVをデータソースとして使用できます。",
-    "flower": "🌹"
-  },
-  {
-    "category": "PowerPoint",
-    "level": 3,
-    "question": "プレゼン資料をPDFに変換するには？",
-    "choices": ["ファイル → 名前を付けて保存 → PDF", "スライドショー → PDF", "デザイン → PDF", "挿入 → PDF"],
-    "answer": 0,
-    "explanation": "ファイル > 名前を付けて保存 またはエクスポートからPDF形式を選択します。",
-    "flower": "🌹"
-  }
+  {"id":"q001","category":"Excel","genre":"関数","level":1,"question":"セルを絶対参照にする記号は？","choices":["#","$","@"],"answer":1,"explanation":"絶対参照は $A$1 のように $ を付けます。コピーしても参照先が変わりません。","flower":"🌱","tags":["参照"]},
+  {"id":"q002","category":"Excel","genre":"関数","level":1,"question":"合計を求める関数は？","choices":["AVG","SUM","MAX","COUNT"],"answer":1,"explanation":"SUM関数は範囲の合計を計算します。例：=SUM(A1:A10)","flower":"🌱","tags":["SUM"]},
+  {"id":"q003","category":"Excel","genre":"関数","level":1,"question":"平均を求める関数は？","choices":["SUM","AVERAGE","MIN","MEDIAN"],"answer":1,"explanation":"AVERAGE関数は範囲の平均値を返します。","flower":"🌱","tags":["AVERAGE"]},
+  {"id":"q004","category":"Excel","genre":"関数","level":1,"question":"最大値を求める関数は？","choices":["MAX","MIN","LARGE","TOP"],"answer":0,"explanation":"MAX関数は範囲内の最大値を返します。","flower":"🌱","tags":["MAX"]},
+  {"id":"q005","category":"Excel","genre":"データ操作","level":1,"question":"列と行を入れ替える操作は？","choices":["ソート","フィルター","行列の入れ替え","分割"],"answer":2,"explanation":"行列の入れ替え（Paste Special > Transpose）で行と列を入れ替えられます。","flower":"🌱","tags":["Transpose"]},
+  {"id":"q006","category":"Excel","genre":"関数","level":2,"question":"条件に合ったデータだけ集計する関数は？","choices":["SUMIF","COUNT","SUM","INDEX"],"answer":0,"explanation":"SUMIFは条件を満たすセルの合計を求めます。例：=SUMIF(A1:A10,\"東京\",B1:B10)","flower":"🌷","tags":["SUMIF","条件付き集計"]},
+  {"id":"q007","category":"Excel","genre":"関数","level":2,"question":"条件に合った回数を数える関数は？","choices":["COUNT","COUNTIF","COUNTA","COUNTBLANK"],"answer":1,"explanation":"COUNTIFは指定した条件に合ったセルの数を数えます。","flower":"🌷","tags":["COUNTIF"]},
+  {"id":"q008","category":"Excel","genre":"関数","level":2,"question":"IF関数で「A1が100以上なら合格」を表す式は？","choices":["=IF(A1>=100,\"合格\",\"不合格\")","=IF(A1>100,\"合格\")","=IF(100<=A1,\"合格\")","=IF(A1=100,\"合格\")"],"answer":0,"explanation":"IF関数は =IF(条件, 真の値, 假の値) の形式です。","flower":"🌷","tags":["IF"]},
+  {"id":"q009","category":"Excel","genre":"ショートカット","level":2,"question":"セルの書式設定で通貨表示にするショートカットは？","choices":["Ctrl+Shift+$","Ctrl+$","Ctrl+Shift+C","Ctrl+F"],"answer":0,"explanation":"Ctrl+Shift+$ で通貨形式にできます。","flower":"🌷","tags":["書式設定"]},
+  {"id":"q010","category":"Excel","genre":"ショートカット","level":2,"question":"テーブルとして整形するショートカットは？","choices":["Ctrl+T","Ctrl+D","Ctrl+L","Ctrl+M"],"answer":0,"explanation":"Ctrl+T で選択範囲をテーブルに変換します。","flower":"🌷","tags":["テーブル"]},
+  {"id":"q011","category":"Excel","genre":"関数","level":3,"question":"VLOOKUP関数の正しい構文は？","choices":["=VLOOKUP(検索値,範囲,列番号,検索方法)","=VLOOKUP(範囲,検索値,列番号,検索方法)","=VLOOKUP(列番号,検索値,範囲,検索方法)","=VLOOKUP(検索値,列番号,範囲,検索方法)"],"answer":0,"explanation":"=VLOOKUP(検索値, テーブル範囲, 列番号, FALSE) が基本形です。","flower":"🌹","tags":["VLOOKUP","検索"]},
+  {"id":"q012","category":"Excel","genre":"関数","level":3,"question":"INDEX関数と組み合わせて使う関数は？","choices":["MATCH","SEARCH","FIND","LOOKUP"],"answer":0,"explanation":"INDEX(範囲, MATCH(検索値, 範囲, 0)) はVLOOKUPより柔軟な参照が可能です。","flower":"🌹","tags":["INDEX","MATCH"]},
+  {"id":"q013","category":"Excel","genre":"データ操作","level":3,"question":"ピボットテーブルを作成するショートカットは？","choices":["Alt+N+V","Ctrl+P","Alt+D+P","Ctrl+Shift+P"],"answer":0,"explanation":"Alt+N+V でピボットテーブルの挿入画面が開きます。旧バージョンは Alt+D+P。","flower":"🌹","tags":["ピボットテーブル"]},
+  {"id":"q014","category":"Excel","genre":"グラフ","level":3,"question":"グラフの種類で、データの推移を見るのに適しているのは？","choices":["折れ線グラフ","棒グラフ","円グラフ","散布図"],"answer":0,"explanation":"折れ線グラフは時系列データの変化や傾向の把握に最適です。","flower":"🌹","tags":["グラフ"]},
+  {"id":"q015","category":"Excel","genre":"関数","level":3,"question":"XLOOKUP関数の特徴は？","choices":["左方向にも検索できる","数値しか検索できない","1列しか使えない","数式が必須"],"answer":0,"explanation":"XLOOKUPはVLOOKUPと違い、左方向への検索やデフォルト値の指定が可能です。","flower":"🌹","tags":["XLOOKUP","検索"]},
+  {"id":"q016","category":"Excel","genre":"関数","level":4,"question":"LAMBDA関数の役割は？","choices":["独自の関数を定義する","データをソートする","条件付き書式を設定する","チャートを作成する"],"answer":0,"explanation":"LAMBDAで名前付きのカスタム関数を作成し、再利用できます。","flower":"💐","tags":["LAMBDA"]},
+  {"id":"q017","category":"Excel","genre":"関数","level":4,"question":"FILTER関数で使われる第3引数は？","choices":["エラー時の値","ソート方法","検索範囲","行番号"],"answer":0,"explanation":"FILTER(配列, 条件, エラー時の値) の第3引数は、フィルター結果が空の場合の代替値です。","flower":"💐","tags":["FILTER"]},
+  {"id":"q018","category":"Excel","genre":"関数","level":4,"question":"UNIQUE関数の結果は？","choices":["重複を除いた一意の値","ソートされた値","最大値と最小値","平均値"],"answer":0,"explanation":"UNIQUE関数は範囲から重複を除いた一意の値を返します。","flower":"💐","tags":["UNIQUE"]},
+  {"id":"q019","category":"ITパスポート","genre":"ハードウェア","level":1,"question":"CPUの役割は？","choices":["記憶","演算・制御","表示","印刷"],"answer":1,"explanation":"CPUはコンピュータの頭脳で、演算と制御を担当します。","flower":"🌱","tags":["CPU"]},
+  {"id":"q020","category":"ITパスポート","genre":"ハードウェア","level":1,"question":"RAMは何を保存する？","choices":["一時データ","永久データ","OSのみ","画像のみ"],"answer":0,"explanation":"RAMはメインメモリで、電源を切ると内容が消える一時記憶装置です。","flower":"🌱","tags":["RAM","メモリ"]},
+  {"id":"q021","category":"ITパスポート","genre":"ハードウェア","level":1,"question":"HDD・SSDは何の略？","choices":["ハードディスクドライブ・ソリッドステートドライブ","ハイテクデータ・システム","ハードデータ・セーフ","ホストディスク・セーフストア"],"answer":0,"explanation":"HDDは磁気ディスク、SSDは半導体メモリを使った記憶装置です。","flower":"🌱","tags":["HDD","SSD","記憶装置"]},
+  {"id":"q022","category":"ITパスポート","genre":"ソフトウェア","level":1,"question":"OSの例として正しいのは？","choices":["Windows, macOS","Excel, Word","Chrome, Firefox","Photoshop, Illustrator"],"answer":0,"explanation":"OS（オペレーティングシステム）はWindows, macOS, Linuxなどです。","flower":"🌱","tags":["OS"]},
+  {"id":"q023","category":"ITパスポート","genre":"ネットワーク","level":1,"question":"インターネットで使われる通信プロトコルは？","choices":["HTTP, TCP/IP","HTML, CSS","Java, Python","USB, HDMI"],"answer":0,"explanation":"TCP/IPがインターネットの基盤プロトコルで、HTTPはWeb通信で使われます。","flower":"🌱","tags":["TCP/IP","HTTP"]},
+  {"id":"q024","category":"ITパスポート","genre":"ネットワーク","level":2,"question":"クラウドサービスの特徴は？","choices":["ネット経由でサーバー資源を利用する","専用サーバーを購入する","オフラインで動作する","USBで接続する"],"answer":0,"explanation":"クラウドサービスはインターネット経由でサーバー、ストレージ、アプリケーションを利用できます。","flower":"🌷","tags":["クラウド"]},
+  {"id":"q025","category":"ITパスポート","genre":"技術トレンド","level":2,"question":"IoTとは何の略？","choices":["Internet of Things","Input of Technology","Info of Transfer","Integrated Operating Tool"],"answer":0,"explanation":"IoTは「物のインターネット」と呼ばれ、家電や車など様々なデバイスがネットに接続される仕組みです。","flower":"🌷","tags":["IoT"]},
+  {"id":"q026","category":"ITパスポート","genre":"セキュリティ","level":2,"question":"サイバーセキュリティの基本三要素は？","choices":["機密性・完全性・可用性","速度・容量・精度","保存・検索・表示","入力・処理・出力"],"answer":0,"explanation":"CIA三要素（Confidentiality, Integrity, Availability）が情報セキュリティの基本です。","flower":"🌷","tags":["CIA","セキュリティ"]},
+  {"id":"q027","category":"ITパスポート","genre":"ビジネス","level":2,"question":"ERPシステムの役割は？","choices":["企業の経営資源を統合管理","メールの送受信","Webサイトの作成","画像の編集"],"answer":0,"explanation":"ERP（Enterprise Resource Planning）は人事、会計、販売などの業務を統合的に管理するシステムです。","flower":"🌷","tags":["ERP"]},
+  {"id":"q028","category":"ITパスポート","genre":"ビジネス","level":2,"question":"ビジネスにおける「DX」とは？","choices":["デジタルトランスフォーメーション","データエクスチェンジ","ディスクサルファイド","ダイレクトエクスポート"],"answer":0,"explanation":"DXはデジタル技術を活用して業務やビジネスモデルを変革することです。","flower":"🌷","tags":["DX"]},
+  {"id":"q029","category":"ITパスポート","genre":"ビジネス","level":3,"question":"プロジェクト管理手法「アジャイル」の特徴は？","choices":["短期サイクルで開発を繰り返す","全工程を完了してから納品する","設計書を最重視する","外注を前提とする"],"answer":0,"explanation":"アジャイルは2〜4週間のスプリントで小刻みに開発し、都度改善する手法です。","flower":"🌹","tags":["アジャイル","開発手法"]},
+  {"id":"q030","category":"ITパスポート","genre":"技術トレンド","level":3,"question":"ブロックチェーンの特徴は？","choices":["分散型で改ざんが難しい","中央サーバーで管理される","暗号化が不可能","テキストのみ対応"],"answer":0,"explanation":"ブロックチェーンは取記録を分散的に保存し、改ざんが困難な技術です。","flower":"🌹","tags":["ブロックチェーン"]},
+  {"id":"q031","category":"ITパスポート","genre":"技術トレンド","level":3,"question":"AIの「教師あり学習」とは？","choices":["正解付きデータで学習する","正解なしでパターンを発見する","人間が直接教える","自ら試行錯誤する"],"answer":0,"explanation":"教師あり学習は、入力と正解のペアをデータとして与え、パターンを学習させる手法です。","flower":"🌹","tags":["AI","機械学習"]},
+  {"id":"q032","category":"ITパスポート","genre":"セキュリティ","level":3,"question":"セキュリティ対策として「多要素認証」とは？","choices":["複数の認証方法を組み合わせる","パスワードを複数個使う","複数のデバイスを使う","複数回ログインする"],"answer":0,"explanation":"多要素認証は、パスワード＋指紋やOTPなど異なる種類の認証を組み合わせる方法です。","flower":"🌹","tags":["認証","MFA"]},
+  {"id":"q033","category":"ITパスポート","genre":"ネットワーク","level":2,"question":"VPNの主な目的は？","choices":["安全な通信路を構築する","速度を上げる","容量を増やす","画面をキャプチャする"],"answer":0,"explanation":"VPNはインターネット上に仮想的な専用回線を構築し、通信を暗号化して安全に通信します。","flower":"🌷","tags":["VPN"]},
+  {"id":"q034","category":"ITパスポート","genre":"ハードウェア","level":1,"question":"キーボードで「全選択」するショートカットは？","choices":["Ctrl+A","Ctrl+S","Ctrl+F","Ctrl+R"],"answer":0,"explanation":"Ctrl+A で現在の画面のすべてを選択します。AはAllの略です。","flower":"🌱","tags":["ショートカット"]},
+  {"id":"q035","category":"Excel","genre":"関数","level":2,"question":"相対参照と絶対参照の違いは？","choices":["コピー時に参照先が変わるか変わらないか","数値の精度の違い","セルの色の違い","関数の種類の違い"],"answer":0,"explanation":"相対参照はコピー時にセルが変わり、絶対参照（$）は常に同じセルを指します。","flower":"🌷","tags":["参照"]},
+  {"id":"q036","category":"Excel","genre":"関数","level":3,"question":"CHOOSE関数で3番目の値を返す式は？","choices":["=CHOOSE(3,\"A\",\"B\",\"C\",\"D\")","=CHOOSE(A3,\"A\",\"B\",\"C\")","=CHOOSE(3,A,B,C)","=CHOOSE(C3,\"A\",\"B\")"],"answer":0,"explanation":"CHOOSE(番号, 値1, 値2, ...)で、番号に対応した値を返します。3なら「C」。","flower":"🌹","tags":["CHOOSE"]},
+  {"id":"q037","category":"Excel","genre":"関数","level":3,"question":"OFFSET関数の役割は？","choices":["指定セルからずれた範囲を参照する","データをソートする","グラフを作成する","ファイルを保存する"],"answer":0,"explanation":"OFFSET(参照, 行, 列, [高さ], [幅]) で基準セルからずれた範囲を動的に参照できます。","flower":"🌹","tags":["OFFSET"]},
+  {"id":"q038","category":"Excel","genre":"関数","level":4,"question":"スプレッドシートで条件付き書式を設定する目的は？","choices":["条件に応じてセルの見た目を変える","データを削除する","ファイルを圧縮する","印刷範囲を設定する"],"answer":0,"explanation":"条件付き書式は、値に応じて文字色や背景色を自動で変える機能です。","flower":"💐","tags":["条件付き書式"]},
+  {"id":"q039","category":"Excel","genre":"ショートカット","level":1,"question":"コピーのショートカットは？","choices":["Ctrl+C","Ctrl+V","Ctrl+X","Ctrl+Z"],"answer":0,"explanation":"Ctrl+C でコピー、Ctrl+V で貼り付け、Ctrl+X で切り取り、Ctrl+Z で元に戻します。","flower":"🌱","tags":["コピー"]},
+  {"id":"q040","category":"Excel","genre":"ショートカット","level":1,"question":"「元に戻す」のショートカットは？","choices":["Ctrl+Z","Ctrl+Y","Ctrl+U","Ctrl+A"],"answer":0,"explanation":"Ctrl+Z で直前の操作を元に戻せます。Ctrl+Y でやり直します。","flower":"🌱","tags":["元に戻す"]},
+  {"id":"q041","category":"Word","genre":"書式設定","level":1,"question":"見出しスタイルの主な用途は？","choices":["文書構造の整理","文字装飾のみ","画像挿入","印刷設定"],"answer":0,"explanation":"見出しスタイルは文書の構造を明確にし、目次作成やナビゲーションに利用します。","flower":"🌱","tags":["見出し"]},
+  {"id":"q042","category":"Word","genre":"編集","level":2,"question":"目次を自動作成するには？","choices":["参考資料タブの目次","挿入タブの目次","ページレイアウト","デザインタブ"],"answer":0,"explanation":"参考資料タブから「目次」を挿入すると、見出しに基づいて自動で目次が作成されます。","flower":"🌷","tags":["目次"]},
+  {"id":"q043","category":"Word","genre":"編集","level":2,"question":"ページ番号を挿入するには？","choices":["挿入タブ → フッタ","ホームタブ","レイアウトタブ","ファイルタブ"],"answer":0,"explanation":"挿入タブのフッタまたはヘッダからページ番号を設定できます。","flower":"🌷","tags":["ページ番号"]},
+  {"id":"q044","category":"Word","genre":"編集","level":3,"question":"差し込み印刷で使うデータソースの形式は？","choices":["ExcelシートやCSV","PDFのみ","画像ファイルのみ","HTMLのみ"],"answer":0,"explanation":"差し込み印刷ではExcelファイルやCSVをデータソースとして使用できます。","flower":"🌹","tags":["差し込み印刷"]},
+  {"id":"q045","category":"PowerPoint","genre":"ショートカット","level":1,"question":"スライドショーを開始するショートカットは？","choices":["F5","F1","Ctrl+P","Alt+S"],"answer":0,"explanation":"F5で最初から、Shift+F5で現在のスライドからスライドショーを開始します。","flower":"🌱","tags":["スライドショー"]},
+  {"id":"q046","category":"PowerPoint","genre":"編集","level":2,"question":"スライドの切り取り時間を指定できる機能は？","choices":["スライドショータイミング","アニメーションタイミング","トランジション","自動再生"],"answer":0,"explanation":"スライドショータイミングで各スライドの表示時間を秒単位で指定できます。","flower":"🌷","tags":["タイミング"]},
+  {"id":"q047","category":"PowerPoint","genre":"編集","level":2,"question":"スライド master の主な用途は？","choices":["デザインの一括変更","スライドショーの再生","音声の挿入","印刷設定"],"answer":0,"explanation":"スライドマスターでフォントや配置を一括設定し、統一感のあるデザインを実現します。","flower":"🌷","tags":["マスター"]},
+  {"id":"q048","category":"PowerPoint","genre":"編集","level":3,"question":"プレゼン資料をPDFに変換するには？","choices":["ファイル → 名前を付けて保存 → PDF","スライドショー → PDF","デザイン → PDF","挿入 → PDF"],"answer":0,"explanation":"ファイル > 名前を付けて保存 またはエクスポートからPDF形式を選択します。","flower":"🌹","tags":["PDF"]},
+  {"id":"q049","category":"Excel","genre":"データ操作","level":2,"question":"データの並び替えで「降順」は？","choices":["大きい順","小さい順","ランダム","五十音順のみ"],"answer":0,"explanation":"降順はZ→A、9→1のように大きい順に並べることです。","flower":"🌷","tags":["ソート"]}
 ]
 </script>
 
@@ -1960,7 +1550,9 @@ function addXP(amount) {
   state.xp += amount;
   while (state.level < LEVEL_XP.length && state.xp >= LEVEL_XP[state.level]) {
     state.level++;
-    showToast(`🎉 レベルアップ！ Lv.${state.level} に到達！`);
+    const bonus = state.level * 50;
+    addCoin(bonus);
+    showToast(`🎉 昇格！ Lv.${state.level} お祝い ¥${bonus} ボーナス！`);
     launchConfetti();
   }
   saveState();
@@ -2212,17 +1804,18 @@ function selectAnswer(idx) {
     quizCorrect++;
     const xpGain = 10 + (q.level || 1) * 5;
     const coinGain = 5 + (q.level || 1) * 3;
+    const yenGain = 10 + (q.level || 1) * 10;
     quizXP += xpGain;
     quizCoin += coinGain;
     quizFlowerCount++;
     addXP(xpGain);
     addCoin(coinGain);
     state.flowers.push(q.flower || '🌱');
-    showToast(`✨ 正解！ ${q.flower || '🌱'} +${xpGain}XP +${coinGain}🪙`);
+    showToast(`💰 +¥${yenGain} お小遣いゲット！ ${q.flower || '🌱'}`);
   } else {
     buttons[idx].classList.add('wrong');
     buttons[q.answer].classList.add('correct');
-    showToast('残念… もっとゆっくり読みましょう 📖');
+    showToast('残念… もう一回チャレンジ！📖');
 
     const easier = getNextAdaptiveQuestion();
     if (easier && quizIndex + 1 < currentQuiz.length) {
@@ -2275,7 +1868,7 @@ function finishQuiz() {
   document.getElementById('modalEmoji').textContent = emoji;
   document.getElementById('modalTitle').textContent = title;
   document.getElementById('modalDesc').textContent = desc;
-  document.getElementById('modalXP').textContent = '+' + quizXP;
+  document.getElementById('modalXP').textContent = '+¥' + (quizXP * 2);
   document.getElementById('modalCoin').textContent = '+' + quizCoin;
   document.getElementById('modalFlower').textContent = '+' + quizFlowerCount;
 
@@ -2400,6 +1993,7 @@ function selectQuickAnswer(idx) {
     quizCorrect++;
     const xpGain = 10 + (q.level || 1) * 5;
     const coinGain = 5 + (q.level || 1) * 3;
+    const yenGain = 10 + (q.level || 1) * 10;
     quick5XP += xpGain;
     quizXP += xpGain;
     quizCoin += coinGain;
@@ -2467,7 +2061,7 @@ function finishQuick5() {
   document.getElementById('modalEmoji').textContent = quick5CorrectCount === quick5TotalCount ? '🏆' : '⏱️';
   document.getElementById('modalTitle').textContent = 'タイムアップ！';
   document.getElementById('modalDesc').textContent = `${quick5TotalCount}問中${quick5CorrectCount}問正解`;
-  document.getElementById('modalXP').textContent = '+' + quick5XP;
+  document.getElementById('modalXP').textContent = '+¥' + (quick5XP * 2);
   document.getElementById('modalCoin').textContent = '+' + quizCoin;
   document.getElementById('modalFlower').textContent = '+' + quizFlowerCount;
   document.getElementById('resultModal').classList.add('show');
@@ -2504,7 +2098,7 @@ function updateFlowerShop() {
     const owned = state.ownedItems.includes(item.id);
     const div = document.createElement('div');
     div.className = 'shop-item' + (owned ? ' owned' : '');
-    div.innerHTML = `<span class="item-emoji">${item.emoji}</span><div class="item-name">${item.name}</div><div class="item-price">${owned ? '✓ 所持' : '🪙 ' + item.price}</div>`;
+    div.innerHTML = `<span class="item-emoji">${item.emoji}</span><div class="item-name">${item.name}</div><div class="item-price">${owned ? '✓ 所持' : '¥' + item.price}</div>`;
     if (!owned) {
       div.onclick = () => buyItem(item);
     }
@@ -2521,7 +2115,7 @@ function buyItem(item) {
     saveState();
     updateUI();
   } else {
-    showToast('🪙 コインが足りません…');
+    showToast('💴 お金が足りない…もう少し勉強しよう！');
   }
 }
 
@@ -2630,13 +2224,13 @@ document.addEventListener('keydown', (e) => {
 });
 
 function resetData() {
-  if (confirm('本当にデータをリセットしますか？\nこの操作は取り消せません。')) {
+  if (confirm('本当にデータをリセットしますか？\nお小遣いも花も全て消えます。')) {
     localStorage.removeItem('hanamaru_state');
     state = { ...DEFAULT_STATE };
     saveState();
     updateUI();
     showScreen('top');
-    showToast('データをリセットしました');
+    showToast('🗑️ リセット完了。また頑張ろう！');
   }
 }
 
