@@ -2,8 +2,16 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>🌸 はなまるExcel</title>
+<meta name="description" content="花を育てながらExcel・IT資格を学べるゲーム">
+<meta name="theme-color" content="#f8c8d4">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="はなまるExcel">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
 <style>
 :root {
   --pink: #f8c8d4;
@@ -2571,6 +2579,11 @@ document.addEventListener('click', (e) => {
     startQuick5Timer();
   }
 });
+
+// ====== PWA SERVICE WORKER ======
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
 </script>
 
 </body>

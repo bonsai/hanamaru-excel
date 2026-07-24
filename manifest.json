@@ -1,0 +1,33 @@
+{
+  "name": "はなまるExcel",
+  "short_name": "はなまるExcel",
+  "description": "花を育てながらExcel・IT資格を学べるゲーム",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#fef6f9",
+  "theme_color": "#f8c8d4",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "productivity"],
+  "lang": "ja",
+  "dir": "ltr"
+}
