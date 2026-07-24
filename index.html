@@ -12,6 +12,9 @@
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-192.png">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <style>
 :root {
   --pink: #f8c8d4;
@@ -1032,6 +1035,14 @@ body {
 .hero-name:hover {
   background: rgba(255,255,255,0.5);
 }
+
+#cloudSyncItem {
+  border-left: 3px solid var(--sky);
+}
+
+#cloudSyncInfo {
+  border-left: 3px solid var(--mint);
+}
 </style>
 </head>
 <body>
@@ -1277,6 +1288,28 @@ body {
       <option value="normal" selected>🌼 中級</option>
       <option value="hard">🌹 上級</option>
     </select>
+  </div>
+
+  <div class="setting-item" id="cloudSyncItem">
+    <div class="s-left">
+      <span class="s-icon">☁️</span>
+      <div>
+        <div class="s-label">クラウド同期</div>
+        <div class="s-desc" id="cloudStatus">未接続</div>
+      </div>
+    </div>
+    <button class="btn btn-mint" id="cloudSyncBtn" onclick="handleCloudSync()">接続する</button>
+  </div>
+
+  <div class="setting-item" id="cloudSyncInfo" style="display:none">
+    <div class="s-left">
+      <span class="s-icon">🔄</span>
+      <div>
+        <div class="s-label">最終同期</div>
+        <div class="s-desc" id="lastSyncTime">-</div>
+      </div>
+    </div>
+    <button class="btn btn-secondary" onclick="forceSyncNow()">今すぐ同期</button>
   </div>
 
   <h3 style="padding:20px 16px 10px">📜 学習履歴</h3>
@@ -2264,6 +2297,169 @@ document.addEventListener('click', (e) => {
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
 }
+
+// ====== FIREBASE CLOUD SYNC ======
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+
+let firebaseApp = null;
+let firebaseAuth = null;
+let firebaseDB = null;
+let currentUser = null;
+let syncEnabled = false;
+let syncDebounce = null;
+
+function initFirebase() {
+  try {
+    if (typeof firebase === 'undefined') return false;
+    if (firebaseConfig.apiKey === 'YOUR_API_KEY') return false;
+    firebaseApp = firebase.initializeApp(firebaseConfig);
+    firebaseAuth = firebase.auth();
+    firebaseDB = firebase.firestore();
+    firebaseDB.enablePersistence({ synchronizeTabs: true }).catch(() => {});
+    return true;
+  } catch(e) {
+    console.warn('Firebase init failed:', e);
+    return false;
+  }
+}
+
+function handleCloudSync() {
+  if (currentUser) {
+    signOutCloud();
+    return;
+  }
+  signInAnonymously();
+}
+
+async function signInAnonymously() {
+  if (!firebaseAuth) {
+    if (!initFirebase()) {
+      showToast('☁️ Firebaseが設定されていません');
+      return;
+    }
+  }
+  try {
+    const result = await firebaseAuth.signInAnonymously();
+    currentUser = result.user;
+    syncEnabled = true;
+    updateCloudUI(true);
+    showToast('☁️ クラウド同期を開始しました');
+    await loadFromCloud();
+    await saveToCloud();
+  } catch(e) {
+    console.warn('Auth failed:', e);
+    showToast('☁️ 接続に失敗しました');
+  }
+}
+
+async function signOutCloud() {
+  if (firebaseAuth) {
+    await firebaseAuth.signOut();
+  }
+  currentUser = null;
+  syncEnabled = false;
+  updateCloudUI(false);
+  showToast('☁️ クラウド同期を解除しました');
+}
+
+function updateCloudUI(loggedIn) {
+  const statusEl = document.getElementById('cloudStatus');
+  const btnEl = document.getElementById('cloudSyncBtn');
+  const infoEl = document.getElementById('cloudSyncInfo');
+
+  if (loggedIn) {
+    statusEl.textContent = '接続中（匿名ID: ' + currentUser.uid.slice(0, 8) + '...）';
+    btnEl.textContent = '切断する';
+    btnEl.className = 'btn btn-secondary';
+    infoEl.style.display = 'flex';
+  } else {
+    statusEl.textContent = '未接続';
+    btnEl.textContent = '接続する';
+    btnEl.className = 'btn btn-mint';
+    infoEl.style.display = 'none';
+  }
+}
+
+async function saveToCloud() {
+  if (!syncEnabled || !currentUser || !firebaseDB) return;
+  try {
+    await firebaseDB.collection('users').doc(currentUser.uid).set({
+      state: state,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
+    const now = new Date().toLocaleString('ja-JP');
+    document.getElementById('lastSyncTime').textContent = now;
+  } catch(e) {
+    console.warn('Cloud save failed:', e);
+  }
+}
+
+async function loadFromCloud() {
+  if (!syncEnabled || !currentUser || !firebaseDB) return;
+  try {
+    const doc = await firebaseDB.collection('users').doc(currentUser.uid).get();
+    if (doc.exists) {
+      const cloudState = doc.data().state;
+      const cloudTotal = (cloudState.totalAnswered || 0) + (cloudState.totalCorrect || 0);
+      const localTotal = state.totalAnswered + state.totalCorrect;
+
+      if (cloudTotal > localTotal) {
+        state = { ...DEFAULT_STATE, ...cloudState };
+        saveState();
+        updateUI();
+        showToast('☁️ クラウドからデータを復元しました');
+      } else if (localTotal > cloudTotal) {
+        await saveToCloud();
+        showToast('☁️ ローカルデータをクラウドに送信しました');
+      }
+      const now = new Date().toLocaleString('ja-JP');
+      document.getElementById('lastSyncTime').textContent = now;
+    }
+  } catch(e) {
+    console.warn('Cloud load failed:', e);
+  }
+}
+
+function forceSyncNow() {
+  if (syncEnabled) {
+    saveToCloud();
+    showToast('🔄 同期中...');
+  }
+}
+
+function scheduleCloudSync() {
+  if (!syncEnabled) return;
+  clearTimeout(syncDebounce);
+  syncDebounce = setTimeout(() => saveToCloud(), 2000);
+}
+
+// Override saveState to include cloud sync
+const _originalSaveState = saveState;
+saveState = function() {
+  _originalSaveState();
+  scheduleCloudSync();
+};
+
+// Auto-restore on load
+document.addEventListener('DOMContentLoaded', () => {
+  if (initFirebase()) {
+    firebaseAuth.onAuthStateChanged((user) => {
+      if (user) {
+        currentUser = user;
+        syncEnabled = true;
+        updateCloudUI(true);
+        loadFromCloud();
+      }
+    });
+  }
+});
 </script>
 
 </body>

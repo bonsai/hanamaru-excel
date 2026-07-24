@@ -1,9 +1,11 @@
-const CACHE_NAME = 'hanamaru-v2';
+const CACHE_NAME = 'hanamaru-v3';
 const ASSETS = [
   './',
   './index.html',
   './manifest.json',
-  './icon.svg'
+  './icon.svg',
+  './icon-192.png',
+  './icon-512.png'
 ];
 
 self.addEventListener('install', (e) => {
@@ -23,7 +25,23 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
+  const url = new URL(e.request.url);
+
+  // Skip Firebase/API requests - always go to network
+  if (url.hostname.includes('firebaseio.com') ||
+      url.hostname.includes('googleapis.com') ||
+      url.hostname.includes('gstatic.com') ||
+      url.pathname.includes('/identity/')) {
+    return;
+  }
+
   e.respondWith(
-    caches.match(e.request).then((cached) => cached || fetch(e.request))
+    caches.match(e.request).then((cached) => {
+      // Network-first for HTML, cache-first for assets
+      if (e.request.mode === 'navigate') {
+        return fetch(e.request).catch(() => cached || new Response('Offline', { status: 503 }));
+      }
+      return cached || fetch(e.request);
+    })
   );
 });
