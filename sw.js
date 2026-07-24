@@ -1,4 +1,4 @@
-const CACHE_NAME = 'hanamaru-v1';
+const CACHE_NAME = 'hanamaru-v2';
 const ASSETS = [
   './',
   './index.html',
